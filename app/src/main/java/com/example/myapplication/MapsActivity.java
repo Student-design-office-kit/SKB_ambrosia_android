@@ -2,33 +2,24 @@ package com.example.myapplication;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.drawable.Drawable;
 import android.location.Location;
-import android.media.Image;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.provider.MediaStore;
-import android.util.Base64;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -43,8 +34,6 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -52,9 +41,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-
-import java.io.ByteArrayOutputStream;
 import java.io.IOError;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -147,21 +133,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     e.printStackTrace();
                 }
 
-                /*NetworkServices.getInstance().getJSONApi().getImageInBase64(titleInfo[0]).enqueue(new Callback<PhotoBase64>() {
-                    @Override
-                    public void onResponse(Call<PhotoBase64> call, Response<PhotoBase64> response) {
-                        if (response.code() == 200) {
-                            result.setPhoto(response.body().getPhoto());
-                        } else Log.d("setImageLog", response.message());
-                    }
+                try{
+                    snippet.setImageBitmap(adapter.decodeImage(in));
+                }catch (Exception e){
+                    snippet.setImageResource(R.drawable.ic_launcher_background);
+                }
 
-                    @Override
-                    public void onFailure(Call<PhotoBase64> call, Throwable t) {
-                        Log.d("setImageLog", t.getMessage());
-                    }
-                });*/
-
-                snippet.setImageBitmap(adapter.decodeImage(in));
                 info.addView(snippet);
                 info.addView(title);
                 return info;
@@ -195,6 +172,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
 
                 showDialog(userLocation.latitude + " " + userLocation.longitude, "ambros", result.getPhoto());
+                setAllMarkers();
             }
         });
 
@@ -224,6 +202,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
 
                 showDialog(userLocation.latitude + " " + userLocation.longitude, "road", result.getPhoto());
+                setAllMarkers();
             }
         });
 
@@ -300,13 +279,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 String info = (userInput.getText().toString().length() > 0) ? userInput.getText().toString() : "no info";
                                 if (image.length() == 0) dialog.cancel();
 
-                                //TODO: Почистить БД на сервере и раскоментировать отправку на сервер фото
-                                /*NetworkServices.getInstance().getJSONApi().uploadMarker(new SendModel(name, info, gps, request_type, image))
+
+                                NetworkServices.getInstance().getJSONApi().uploadMarker(new SendModel(name, info, gps, request_type, image))
                                 .enqueue(new Callback<ResponseModel>() {
                                     @Override
                                     public void onResponse(Call<ResponseModel> call, Response<ResponseModel> response) {
                                         if(response.code() == 200){
                                             Log.d("alert", "accept");
+                                            allMarkers = getAllMarkers();
                                         }
                                         else Log.d("alert", response.message());
                                     }
@@ -315,7 +295,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                     public void onFailure(Call<ResponseModel> call, Throwable t) {
                                         Log.d("alert", "fail");
                                     }
-                                });*/
+                                });
                                 dialog.cancel();
                             }
                         })
