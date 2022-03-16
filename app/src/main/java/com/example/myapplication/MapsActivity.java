@@ -29,6 +29,7 @@ import com.example.myapplication.Models.Markers;
 import com.example.myapplication.Models.PhotoBase64;
 import com.example.myapplication.Models.ResponseModel;
 import com.example.myapplication.Models.SendModel;
+import com.example.myapplication.Services.JSONPlaceHolderApi;
 import com.example.myapplication.Services.NetworkServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -48,6 +49,8 @@ import java.util.ArrayList;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -152,8 +155,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                         Location location = gpsTracker.getLocation();
                         LatLng userLocation = new LatLng(location.getLatitude(), location.getLongitude());
-                        markers.add(mMap.addMarker(new MarkerOptions().position(userLocation).title("Амброзия")
-                                .icon(adapter.getBitmapFromVectorDrawable(getApplicationContext(), R.drawable.ic_flower))));
+/*                        markers.add(mMap.addMarker(new MarkerOptions().position(userLocation).title("Амброзия")
+                                .icon(adapter.getBitmapFromVectorDrawable(getApplicationContext(), R.drawable.ic_flower))));*/
                         mMap.moveCamera(CameraUpdateFactory.newLatLng(userLocation));
                         mMap.setMinZoomPreference(13);
                     } else {
@@ -183,8 +186,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                         Location location = gpsTracker.getLocation();
                         LatLng userLocation = new LatLng(location.getLatitude(), location.getLongitude());
-                        markers.add(mMap.addMarker(new MarkerOptions().position(userLocation).title("Неровность")
-                                .icon(adapter.getBitmapFromVectorDrawable(getApplicationContext(), R.drawable.ic_pit))));
+/*                        markers.add(mMap.addMarker(new MarkerOptions().position(userLocation).title("Неровность")
+                                .icon(adapter.getBitmapFromVectorDrawable(getApplicationContext(), R.drawable.ic_pit))));*/
                         mMap.moveCamera(CameraUpdateFactory.newLatLng(userLocation));
                         mMap.setMinZoomPreference(13);
                     } else {
@@ -278,24 +281,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 String name = (userName.getText().toString().length() > 0) ? userName.getText().toString() : "unnamed";
                                 String info = (userInput.getText().toString().length() > 0) ? userInput.getText().toString() : "no info";
                                 if (image.length() == 0) dialog.cancel();
+                                sendImage(new SendModel(name, info, gps, request_type, image));
 
-
-                                NetworkServices.getInstance().getJSONApi().uploadMarker(new SendModel(name, info, gps, request_type, image))
-                                .enqueue(new Callback<ResponseModel>() {
-                                    @Override
-                                    public void onResponse(Call<ResponseModel> call, Response<ResponseModel> response) {
-                                        if(response.code() == 200){
-                                            Log.d("alert", "accept");
-                                            allMarkers = getAllMarkers();
-                                        }
-                                        else Log.d("alert", response.message());
-                                    }
-
-                                    @Override
-                                    public void onFailure(Call<ResponseModel> call, Throwable t) {
-                                        Log.d("alert", "fail");
-                                    }
-                                });
                                 dialog.cancel();
                             }
                         })
@@ -310,4 +297,30 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         alertDialog.show();
     }
 
+    public void sendImage(SendModel sendModel){
+        final String BASE_URL = "https://tagproject.sfedu.ru/api/";
+
+        //Initializing a Retrofit library object
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        JSONPlaceHolderApi rest_api = retrofit.create(JSONPlaceHolderApi.class);
+
+        rest_api.uploadMarker(sendModel).enqueue(new Callback<ResponseModel>() {
+            @Override
+            public void onResponse(Call<ResponseModel> call, Response<ResponseModel> response) {
+                if(response.code() == 200){
+                    Log.d("alert", "accept");
+                    //allMarkers = getAllMarkers();
+                }
+                else Log.d("alert", response.message());
+            }
+
+            @Override
+            public void onFailure(Call<ResponseModel> call, Throwable t) {
+                Log.d("alert", "fail");
+            }
+        });
+    }
 }
