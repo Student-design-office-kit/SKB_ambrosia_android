@@ -42,6 +42,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
+
 import java.io.IOError;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -58,17 +59,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private ArrayList<Marker> markers;
     private SupportMapFragment mapFragment;
     private ArrayList<com.example.myapplication.Models.Response> allMarkers = getAllMarkers();
-    private static final int REQUEST_TAKE_PHOTO = 1;
+    private static final int REQUEST_TAKE_PHOTO_AMBROSE = 1;
+    private static final int REQUEST_TAKE_PHOTO_PIT = 2;
     private PhotoBase64 result = new PhotoBase64("-");
     private ImageAdapter adapter = new ImageAdapter();
+    private LatLng myLocation;
+    private ImageView ambrosia;
+    private ImageView unevenness;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-        mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-
+        findView();
         if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             mapFragment.getMapAsync(this);
         } else {
@@ -80,21 +83,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         markers = new ArrayList<>();
-        GPSTracker gpsTracker = new GPSTracker(getApplicationContext());
-        Location location = gpsTracker.getLocation();
-        LatLng userLocation;
-        if (location != null) {
-            userLocation = new LatLng(location.getLatitude(), location.getLongitude());
-        } else userLocation = new LatLng(allMarkers.get(2).getLat(), allMarkers.get(2).getLon());
-
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(userLocation));
+        //TODO: Uncomment setAllMarkers
+        //setAllMarkers();
         mMap.setMinZoomPreference(13);
-
-        setAllMarkers();
-
-        ImageView ambrosia = findViewById(R.id.ambrosia);
-        ImageView unevenness = findViewById(R.id.unevenness);
-
         mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
             @Override
             public View getInfoWindow(Marker marker) {
@@ -122,7 +113,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
                 StrictMode.setThreadPolicy(policy);
 
-                String url = "https://tagproject.sfedu.ru/map/api/marker/"+ titleInfo[0] +"/get_photo";
+                String url = "https://tagproject.sfedu.ru/map/api/marker/" + titleInfo[0] + "/get_photo";
                 String in = null;
                 try {
                     in = Jsoup.connect(url).ignoreContentType(true).execute().body();
@@ -131,14 +122,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     Log.d("myLog", in);
                 } catch (IOException e) {
                     e.printStackTrace();
-                }
-                 catch (JSONException e) {
+                } catch (JSONException e) {
                     e.printStackTrace();
                 }
 
-                try{
+                try {
                     snippet.setImageBitmap(adapter.decodeImage(in));
-                }catch (Exception e){
+                } catch (Exception e) {
                     snippet.setImageResource(R.drawable.ic_launcher_background);
                 }
 
@@ -148,79 +138,106 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            int permissionStatus = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
+            if (permissionStatus == PackageManager.PERMISSION_GRANTED) {
+                setOnMyLocationChangeListener();
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(myLocation));
+            } else {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        1);
+            }
+            return;
+        }
+        mMap.setMyLocationEnabled(true);
+
         ambrosia.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try {
-                    if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                        Location location = gpsTracker.getLocation();
-                        LatLng userLocation = new LatLng(location.getLatitude(), location.getLongitude());
-/*                        markers.add(mMap.addMarker(new MarkerOptions().position(userLocation).title("Амброзия")
-                                .icon(adapter.getBitmapFromVectorDrawable(getApplicationContext(), R.drawable.ic_flower))));*/
-                        mMap.moveCamera(CameraUpdateFactory.newLatLng(userLocation));
-                        mMap.setMinZoomPreference(13);
-                    } else {
-                        ActivityCompat.requestPermissions(MapsActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-                    }
-                } catch (IOError e) {
-                    Toast.makeText(getApplicationContext(), "Убедитесь, что у вас включен GPS", Toast.LENGTH_LONG).show();
-                }
-
-
-                Intent takePhotoIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                try {
-                    startActivityForResult(takePhotoIntent, REQUEST_TAKE_PHOTO);
-                } catch (ActivityNotFoundException e) {
-                    e.printStackTrace();
-                }
-
-                showDialog(userLocation.latitude + " " + userLocation.longitude, "ambros", result.getPhoto());
-                setAllMarkers();
+                setAmbrosiaClickListener();
             }
         });
-
         unevenness.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try {
-                    if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                        Location location = gpsTracker.getLocation();
-                        LatLng userLocation = new LatLng(location.getLatitude(), location.getLongitude());
-/*                        markers.add(mMap.addMarker(new MarkerOptions().position(userLocation).title("Неровность")
-                                .icon(adapter.getBitmapFromVectorDrawable(getApplicationContext(), R.drawable.ic_pit))));*/
-                        mMap.moveCamera(CameraUpdateFactory.newLatLng(userLocation));
-                        mMap.setMinZoomPreference(13);
-                    } else {
-                        ActivityCompat.requestPermissions(MapsActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-                    }
-                } catch (IOError e) {
-                    Toast.makeText(getApplicationContext(), "Убедитесь, что у вас включен GPS", Toast.LENGTH_LONG).show();
-                }
-
-                Intent takePhotoIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                try {
-                    startActivityForResult(takePhotoIntent, REQUEST_TAKE_PHOTO);
-                } catch (ActivityNotFoundException e) {
-                    e.printStackTrace();
-                }
-
-                showDialog(userLocation.latitude + " " + userLocation.longitude, "road", result.getPhoto());
-                setAllMarkers();
+                setPitClickListener();
             }
         });
+    }
 
+    private void setOnMyLocationChangeListener() {
+        if (mMap != null) {
+            mMap.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener() {
+                @Override
+                public void onMyLocationChange(Location arg0) {
+                    myLocation = new LatLng(arg0.getLatitude(), arg0.getLongitude());
+                    if (myLocation == null)
+                        myLocation = new LatLng(mMap.getMyLocation().getLatitude(), mMap.getMyLocation().getLongitude());
+                }
+            });
+        }
+    }
+
+    private void setAmbrosiaClickListener() {
+        permissionCheck();
+        getPhoto(REQUEST_TAKE_PHOTO_AMBROSE);
+        //TODO: Uncomment setAllMarkers
+        //setAllMarkers();
+    }
+
+    private void setPitClickListener() {
+        permissionCheck();
+        getPhoto(REQUEST_TAKE_PHOTO_PIT);
+        //TODO: Uncomment setAllMarkers
+        //setAllMarkers();
+    }
+
+    private void permissionCheck() {
+        try {
+            if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                setOnMyLocationChangeListener();
+            } else {
+                ActivityCompat.requestPermissions(MapsActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+            }
+        } catch (IOError e) {
+            Toast.makeText(getApplicationContext(), "Убедитесь, что у вас включен GPS", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void getPhoto(int requestCode) {
+        Intent takePhotoIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        try {
+            startActivityForResult(takePhotoIntent, requestCode);
+        } catch (ActivityNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void findView() {
+        ambrosia = findViewById(R.id.ambrosia);
+        unevenness = findViewById(R.id.unevenness);
+        mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_TAKE_PHOTO && resultCode == RESULT_OK) {
-            Bundle extras = data.getExtras();
-            Bitmap thumbnailBitmap = (Bitmap) extras.get("data");
-            ImageAdapter adapter = new ImageAdapter();
-            result.setPhoto(adapter.encodeImage(thumbnailBitmap));
-            Log.d("getImage", result.getPhoto());
+        if (requestCode == REQUEST_TAKE_PHOTO_AMBROSE && resultCode == RESULT_OK) {
+            getImageFromResult(data);
+            showDialog(mMap.getMyLocation().getLatitude() + " " + mMap.getMyLocation().getLongitude(), "ambros", result.getPhoto());
+        } else if (requestCode == REQUEST_TAKE_PHOTO_PIT && resultCode == RESULT_OK) {
+            getImageFromResult(data);
+            showDialog(mMap.getMyLocation().getLatitude() + " " + mMap.getMyLocation().getLongitude(), "road", result.getPhoto());
         }
+    }
+
+    private void getImageFromResult(Intent data) {
+        Bundle extras = data.getExtras();
+        Bitmap thumbnailBitmap = (Bitmap) extras.get("data");
+        ImageAdapter adapter = new ImageAdapter();
+        result.setPhoto(adapter.encodeImage(thumbnailBitmap));
+        Log.d("getImage", result.getPhoto());
     }
 
     public ArrayList<com.example.myapplication.Models.Response> getAllMarkers() {
@@ -233,7 +250,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     public void onResponse(Call<Markers> call, Response<Markers> response) {
                         if (response.code() == 200) {
                             markersArrayList.addAll(response.body().getMarkers());
-                            Log.d("myLog", "accept");
+                            Log.d("myLog", "accept \n" + response.message());
                         } else Log.d("myLog", response.message());
                     }
 
@@ -246,7 +263,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public void setAllMarkers() {
-        for (int i = 2; i < allMarkers.size(); i++) {
+        for (int i = 0; i < allMarkers.size(); i++) {
             if (allMarkers.get(i).getMarkerType().equals("road")) {
                 markers.add(mMap.addMarker(new MarkerOptions().position(new LatLng(allMarkers.get(i).getLat(),
                         allMarkers.get(i).getLon())).title(allMarkers.get(i).getSlug()
@@ -297,7 +314,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         alertDialog.show();
     }
 
-    public void sendImage(SendModel sendModel){
+    public void sendImage(SendModel sendModel) {
         final String BASE_URL = "https://tagproject.sfedu.ru/api/";
 
         //Initializing a Retrofit library object
@@ -310,11 +327,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         rest_api.uploadMarker(sendModel).enqueue(new Callback<ResponseModel>() {
             @Override
             public void onResponse(Call<ResponseModel> call, Response<ResponseModel> response) {
-                if(response.code() == 200){
+                if (response.code() == 200) {
                     Log.d("alert", "accept");
+                    Toast.makeText(getApplicationContext(), "Метка отправлена на проверку",
+                            Toast.LENGTH_LONG).show();
                     //allMarkers = getAllMarkers();
-                }
-                else Log.d("alert", response.message());
+                } else Log.d("alert", response.message());
             }
 
             @Override
