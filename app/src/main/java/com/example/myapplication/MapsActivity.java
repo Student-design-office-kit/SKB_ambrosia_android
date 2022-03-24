@@ -79,11 +79,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
         mapFragment.getMapAsync(this);
 
-        /*if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            mapFragment.getMapAsync(this);
-        } else {
-            ActivityCompat.requestPermissions(MapsActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-        }*/
     }
 
     public boolean isGeoDisabled() {
@@ -304,17 +299,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         mDialogBuilder
                 .setCancelable(false)
-                .setPositiveButton("OK",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                String name = (userName.getText().toString().length() > 0) ? userName.getText().toString() : "unnamed";
-                                String info = (userInput.getText().toString().length() > 0) ? userInput.getText().toString() : "no info";
-                                if (image.length() == 0) dialog.cancel();
-                                sendImage(new SendModel(name, info, gps, request_type, image));
-
-                                dialog.cancel();
-                            }
-                        })
+                .setPositiveButton("OK",null)
                 .setNegativeButton("Отмена",
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
@@ -322,8 +307,29 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             }
                         });
 
-        AlertDialog alertDialog = mDialogBuilder.create();
-        alertDialog.show();
+        AlertDialog dialog = mDialogBuilder.create();
+        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialogInterface) {
+                ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        String name = userName.getText().toString();
+                        String info = userInput.getText().toString();
+                        if (image.length() == 0) dialog.cancel();
+                        if (name.length() < 2 || info.length() < 3) {
+                            Toast.makeText(getApplicationContext(), "Заполните все поля", Toast.LENGTH_SHORT).show();
+                        } else {
+                            sendImage(new SendModel(name, info, gps, request_type, image));
+                            dialog.cancel();
+                            dialog.dismiss();
+                        }
+                    }
+                });
+            }
+        });
+
+        dialog.show();
     }
 
     public void sendImage(SendModel sendModel) {
@@ -343,7 +349,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     Log.d("alert", "accept");
                     Toast.makeText(getApplicationContext(), "Метка отправлена на проверку",
                             Toast.LENGTH_LONG).show();
-                    //allMarkers = getAllMarkers();
+                    allMarkers = getAllMarkers();
                 } else Log.d("alert", response.message());
             }
 

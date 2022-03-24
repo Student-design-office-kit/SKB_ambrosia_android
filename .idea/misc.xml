@@ -4,6 +4,10 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/MyApplication/app/src/main/res/layout/activity_maps.xml" value="0.18802083333333333" />
+        <entry key="..\:/Projects/Android/Ambrouse/app/src/main/res/drawable/ic_bnv_car.xml" value="0.165" />
+        <entry key="..\:/Projects/Android/Ambrouse/app/src/main/res/drawable/ic_bnv_flower.xml" value="0.165" />
+        <entry key="..\:/Projects/Android/Ambrouse/app/src/main/res/drawable/ic_flower.xml" value="0.165" />
+        <entry key="..\:/Projects/Android/Ambrouse/app/src/main/res/drawable/ic_pit.xml" value="0.165" />
         <entry key="..\:/Projects/Android/Ambrouse/app/src/main/res/layout/activity_maps.xml" value="0.14130434782608695" />
         <entry key="..\:/Projects/Android/Ambrouse/app/src/main/res/layout/alert_view.xml" value="0.14492753623188406" />
         <entry key="app/src/main/res/layout/activity_maps.xml" value="0.23867753623188406" />
