@@ -7,11 +7,13 @@ import androidx.fragment.app.FragmentActivity;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.provider.MediaStore;
@@ -72,19 +74,31 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         findView();
-        if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        if (isGeoDisabled()) {
+            startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+        }
+        mapFragment.getMapAsync(this);
+
+        /*if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             mapFragment.getMapAsync(this);
         } else {
             ActivityCompat.requestPermissions(MapsActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-        }
+        }*/
+    }
+
+    public boolean isGeoDisabled() {
+        LocationManager mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        boolean mIsGPSEnabled = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        boolean mIsNetworkEnabled = mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+        boolean mIsGeoDisabled = !mIsGPSEnabled && !mIsNetworkEnabled;
+        return mIsGeoDisabled;
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         markers = new ArrayList<>();
-        //TODO: Uncomment setAllMarkers
-        //setAllMarkers();
+        setAllMarkers();
         mMap.setMinZoomPreference(13);
         mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
             @Override
@@ -181,15 +195,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void setAmbrosiaClickListener() {
         permissionCheck();
         getPhoto(REQUEST_TAKE_PHOTO_AMBROSE);
-        //TODO: Uncomment setAllMarkers
-        //setAllMarkers();
+        setAllMarkers();
     }
 
     private void setPitClickListener() {
         permissionCheck();
         getPhoto(REQUEST_TAKE_PHOTO_PIT);
-        //TODO: Uncomment setAllMarkers
-        //setAllMarkers();
+        setAllMarkers();
     }
 
     private void permissionCheck() {
