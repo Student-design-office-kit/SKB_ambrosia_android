@@ -96,7 +96,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap = googleMap;
         markers = new ArrayList<>();
         setAllMarkers();
-        mMap.setMinZoomPreference(13);
+        mMap.setMinZoomPreference(12);
         mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
             @Override
             public View getInfoWindow(Marker marker) {
@@ -286,7 +286,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         }
 
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(allMarkers.get(3).getLat(), allMarkers.get(3).getLon())));
+        if(allMarkers.size() != 0)mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(allMarkers.get(allMarkers.size()-1).getLat(), allMarkers.get(allMarkers.size()-1).getLon())));
     }
 
     public void showDialog(String gps, String request_type, String image) {
