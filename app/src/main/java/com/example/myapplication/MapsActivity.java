@@ -1,11 +1,11 @@
 package com.example.myapplication;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
-import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -40,6 +40,8 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.textfield.TextInputEditText;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -288,48 +290,42 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public void showDialog(String gps, String request_type, String image) {
-        LayoutInflater li = LayoutInflater.from(getApplicationContext());
-        View promptsView = li.inflate(R.layout.alert_view, null);
-
-        AlertDialog.Builder mDialogBuilder = new AlertDialog.Builder(MapsActivity.this);
-        mDialogBuilder.setView(promptsView);
-
-        final EditText userName = promptsView.findViewById(R.id.input_name);
-        final EditText userInput = promptsView.findViewById(R.id.input_text);
-
-        mDialogBuilder
-                .setCancelable(false)
-                .setPositiveButton("OK",null)
-                .setNegativeButton("Отмена",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                dialog.cancel();
-                            }
-                        });
-
-        AlertDialog dialog = mDialogBuilder.create();
-        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+        View promptsView = View.inflate(this, R.layout.alert_view, null);
+        final TextInputEditText userName = promptsView.findViewById(R.id.input_name);
+        final TextInputEditText userInput = promptsView.findViewById(R.id.input_text);
+        androidx.appcompat.app.AlertDialog alertDialog = new MaterialAlertDialogBuilder(MapsActivity.this, R.style.RoundShapeTheme)
+                .setTitle("Отправка метки")
+                .setPositiveButton("Ok",null)
+                .setNegativeButton("Отмена", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.cancel();
+                    }
+                })
+                .setView(promptsView)
+                .create();
+        alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
             public void onShow(DialogInterface dialogInterface) {
-                ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
+                ((androidx.appcompat.app.AlertDialog) alertDialog).getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         String name = userName.getText().toString();
                         String info = userInput.getText().toString();
-                        if (image.length() == 0) dialog.cancel();
+                        if (image.length() == 0) alertDialog.cancel();
                         if (name.length() < 2 || info.length() < 3) {
                             Toast.makeText(getApplicationContext(), "Заполните все поля", Toast.LENGTH_SHORT).show();
                         } else {
                             sendImage(new SendModel(name, info, gps, request_type, image));
-                            dialog.cancel();
-                            dialog.dismiss();
+                            alertDialog.cancel();
+                            alertDialog.dismiss();
                         }
                     }
                 });
             }
         });
 
-        dialog.show();
+        alertDialog.show();
     }
 
     public void sendImage(SendModel sendModel) {
