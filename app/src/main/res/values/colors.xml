@@ -8,4 +8,6 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="bnvColor">#F1F3F4</color>
+    <color name="flowerColor">#E60C0C</color>
+    <color name="carColor">#0C3BE6</color>
 </resources>

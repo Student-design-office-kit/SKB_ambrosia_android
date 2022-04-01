@@ -234,7 +234,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_TAKE_PHOTO_AMBROSE && resultCode == RESULT_OK) {
             getImageFromResult(data);
-            showDialog(mMap.getMyLocation().getLatitude() + " " + mMap.getMyLocation().getLongitude(), "ambros", result.getPhoto());
+            showDialog(mMap.getMyLocation().getLongitude() + " " + mMap.getMyLocation().getLatitude(), "ambros", result.getPhoto());
         } else if (requestCode == REQUEST_TAKE_PHOTO_PIT && resultCode == RESULT_OK) {
             getImageFromResult(data);
             showDialog(mMap.getMyLocation().getLatitude() + " " + mMap.getMyLocation().getLongitude(), "road", result.getPhoto());
