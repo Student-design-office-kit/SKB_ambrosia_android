@@ -1,17 +1,24 @@
 package com.example.myapplication.Models;
 
+import com.google.gson.annotations.SerializedName;
+
 public class SendModel {
+    @SerializedName("name")
     private String name;
+    @SerializedName("description")
     private String description;
+    @SerializedName("gps")
     private String gps;
-    private String request_type;
+    @SerializedName("marker_type")
+    private int requestType;
+    @SerializedName("image")
     private String image;
 
-    public SendModel(String name, String description, String gps, String request_type, String image) {
+    public SendModel(String name, String description, String gps, int requestType, String image) {
         this.name = name;
         this.description = description;
         this.gps = gps;
-        this.request_type = request_type;
+        this.requestType = requestType;
         this.image = image;
     }
 
