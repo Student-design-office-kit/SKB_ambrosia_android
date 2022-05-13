@@ -12,10 +12,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.location.LocationManager;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.provider.MediaStore;
@@ -48,11 +46,6 @@ import org.jsoup.Jsoup;
 
 import java.io.IOError;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 
 import retrofit2.Call;
@@ -113,10 +106,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 info.setOrientation(LinearLayout.VERTICAL);
                 ImageView snippet = new ImageView(getApplicationContext());
                 TextView title = new TextView(getApplicationContext());
-                /*snippet.setMinimumHeight(100);
-                snippet.setMinimumWidth(100);
-                snippet.setMaxWidth(100);
-                snippet.setMaxHeight(100);*/
                 title.setMaxWidth(300);
 
                 title.setGravity(Gravity.CENTER);
@@ -290,7 +279,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         }
 
-        if(allMarkers.size() != 0)mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(allMarkers.get(allMarkers.size()-1).getLat(), allMarkers.get(allMarkers.size()-1).getLon())));
+        if (allMarkers.size() != 0)
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(allMarkers.get(allMarkers.size() - 1).getLat(), allMarkers.get(allMarkers.size() - 1).getLon())));
     }
 
     public void showDialog(String gps, int request_type, String image) {
@@ -299,7 +289,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         final TextInputEditText userInput = promptsView.findViewById(R.id.input_text);
         androidx.appcompat.app.AlertDialog alertDialog = new MaterialAlertDialogBuilder(MapsActivity.this, R.style.RoundShapeTheme)
                 .setTitle("Отправка метки")
-                .setPositiveButton("Ok",null)
+                .setPositiveButton("Ok", null)
                 .setNegativeButton("Отмена", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
@@ -339,10 +329,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onResponse(Call<ResponseModel> call, Response<ResponseModel> response) {
                 if (response.code() == 200) {
                     Log.d("alert", response.body().getMsg());
-                    Toast.makeText(getApplicationContext(), "Метка отправлена на проверку",
-                            Toast.LENGTH_LONG).show();
                     allMarkers = getAllMarkers();
                 } else Log.d("alert", response.message());
+                Toast.makeText(getApplicationContext(), "Метка отправлена на проверку",
+                        Toast.LENGTH_LONG).show();
             }
 
             @Override
