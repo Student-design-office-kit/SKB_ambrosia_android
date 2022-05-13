@@ -16,6 +16,6 @@ public interface JSONPlaceHolderApi {
     @GET("markers")
     Call<ArrayList<Markers>> getAllMarks();
 
-    @POST("markers/upload")
+    @POST("markers/upload/")
     Call<ResponseModel> uploadMarker(@Body SendModel sendModel);
 }
