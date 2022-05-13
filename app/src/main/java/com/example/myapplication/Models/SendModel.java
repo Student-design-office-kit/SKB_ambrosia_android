@@ -10,16 +10,26 @@ public class SendModel {
     @SerializedName("gps")
     private String gps;
     @SerializedName("marker_type")
-    private int requestType;
+    private int marker_type;
     @SerializedName("image")
     private String image;
 
-    public SendModel(String name, String description, String gps, int requestType, String image) {
+    public SendModel(String name, String description, String gps, int marker_type, String image) {
         this.name = name;
         this.description = description;
         this.gps = gps;
-        this.requestType = requestType;
+        this.marker_type = marker_type;
         this.image = image;
     }
 
+    @Override
+    public String toString() {
+        return "SendModel{" +
+                "name:\"" + name + '\"' +
+                ", description:\"" + description + '\"' +
+                ", gps:\"" + gps + '\"' +
+                ", marker_type:" + marker_type +
+                ", image:\"" + image + '\"' +
+                '}';
+    }
 }

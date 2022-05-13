@@ -5,7 +5,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class NetworkServices {
     private static NetworkServices mInstance;
-    private static final String BASE_URL = "http://api.tagproject.sfedu.ru/api/v1/map/";
+    private static final String BASE_URL = "http://tagproject-api.sfedu.ru/api/v1/map/";
     private Retrofit mRetrofit;
 
     private NetworkServices() {

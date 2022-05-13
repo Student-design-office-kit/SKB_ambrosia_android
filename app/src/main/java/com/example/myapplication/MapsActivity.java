@@ -42,6 +42,10 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputEditText;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.jsoup.Jsoup;
+
 import java.io.IOError;
 import java.io.IOException;
 import java.io.InputStream;
@@ -104,13 +108,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public View getInfoContents(Marker marker) {
                 String titleInfo[] = marker.getTitle().split("some_id");
-                String url = "http://api.tagproject.sfedu.ru" + titleInfo[0];
+                String url = "http://tagproject-api.sfedu.ru/api/v1/map/markers/" + titleInfo[0] + "/get_image_base64";
                 LinearLayout info = new LinearLayout(getApplicationContext());
                 info.setOrientation(LinearLayout.VERTICAL);
                 ImageView snippet = new ImageView(getApplicationContext());
                 TextView title = new TextView(getApplicationContext());
-                snippet.setMinimumHeight(300);
-                snippet.setMinimumWidth(300);
+                /*snippet.setMinimumHeight(100);
+                snippet.setMinimumWidth(100);
+                snippet.setMaxWidth(100);
+                snippet.setMaxHeight(100);*/
                 title.setMaxWidth(300);
 
                 title.setGravity(Gravity.CENTER);
@@ -120,25 +126,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     title.setText("No title");
                 }
 
-                /*StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+                StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
                 StrictMode.setThreadPolicy(policy);
 
                 String in = null;
                 try {
                     in = Jsoup.connect(url).ignoreContentType(true).execute().body();
                     JSONObject reader = new JSONObject(in);
-                    in = reader.getString("photo_base64");
-                    Log.d("myLog", in);
+                    in = reader.getString("image_base64");
+                    Log.d("myIn", in);
+                    try {
+                        snippet.setImageBitmap(Bitmap.createScaledBitmap(adapter.decodeImage(in), 200, 200, false));
+                    } catch (Exception e) {
+                        snippet.setImageResource(R.drawable.ic_flower);
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 } catch (JSONException e) {
                     e.printStackTrace();
-                }*/
-                try {
-                    //snippet.setImageBitmap(downloadImage(url));
-                } catch (Exception e) {
-                    snippet.setImageResource(R.drawable.ic_flower);
                 }
+
 
                 info.addView(snippet);
                 info.addView(title);
@@ -171,22 +178,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 setPitClickListener();
             }
         });
-    }
-
-    private static Bitmap downloadImage(String strImageURL){
-        String strImageName = strImageURL;
-        Log.d("test","Saving image from: " + strImageURL);
-        OutputStream os = null;
-        try {
-            URL urlImage = new URL(strImageURL);
-            InputStream in = urlImage.openStream();
-
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return null;
     }
 
     private void setOnMyLocationChangeListener() {
@@ -247,10 +238,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_TAKE_PHOTO_AMBROSE && resultCode == RESULT_OK) {
             getImageFromResult(data);
-            showDialog(mMap.getMyLocation().getLongitude() + "," + mMap.getMyLocation().getLatitude(), 1, result.getPhoto());
+            showDialog(mMap.getMyLocation().getLatitude() + ", " + mMap.getMyLocation().getLongitude(), 1, result.getPhoto());
         } else if (requestCode == REQUEST_TAKE_PHOTO_PIT && resultCode == RESULT_OK) {
             getImageFromResult(data);
-            showDialog(mMap.getMyLocation().getLatitude() + "," + mMap.getMyLocation().getLongitude(), 0, result.getPhoto());
+            showDialog(mMap.getMyLocation().getLatitude() + ", " + mMap.getMyLocation().getLongitude(), 0, result.getPhoto());
         }
     }
 
@@ -288,12 +279,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         for (int i = 0; i < allMarkers.size(); i++) {
             if (allMarkers.get(i).getMarkerType() == 1) {
                 markers.add(mMap.addMarker(new MarkerOptions().position(new LatLng(allMarkers.get(i).getLat(),
-                        allMarkers.get(i).getLon())).title(allMarkers.get(i).getImage()
+                        allMarkers.get(i).getLon())).title(allMarkers.get(i).getId()
                         + "some_id" + allMarkers.get(i).getDescription())
                         .icon(adapter.getBitmapFromVectorDrawable(getApplicationContext(), R.drawable.ic_pit))));
             } else {
                 markers.add(mMap.addMarker(new MarkerOptions().position(new LatLng(allMarkers.get(i).getLat(),
-                        allMarkers.get(i).getLon())).title(allMarkers.get(i).getImage()
+                        allMarkers.get(i).getLon())).title(allMarkers.get(i).getId()
                         + "some_id" + allMarkers.get(i).getDescription())
                         .icon(adapter.getBitmapFromVectorDrawable(getApplicationContext(), R.drawable.ic_flower))));
             }
@@ -342,7 +333,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public void sendImage(SendModel sendModel) {
-
+        Log.d("sendModel", sendModel.toString());
         NetworkServices.getInstance().getJSONApi().uploadMarker(sendModel).enqueue(new Callback<ResponseModel>() {
             @Override
             public void onResponse(Call<ResponseModel> call, Response<ResponseModel> response) {
