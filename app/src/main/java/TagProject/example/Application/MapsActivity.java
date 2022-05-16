@@ -1,4 +1,4 @@
-package TagProject.example.myapplication;
+package TagProject.example.Application;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
@@ -25,14 +25,14 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import TagProject.example.myapplication.Models.Markers;
-import TagProject.example.myapplication.Models.PhotoBase64;
-import TagProject.example.myapplication.Models.ResponseModel;
-import TagProject.example.myapplication.Models.SendModel;
+import TagProject.example.Application.Models.Markers;
+import TagProject.example.Application.Models.PhotoBase64;
+import TagProject.example.Application.Models.ResponseModel;
+import TagProject.example.Application.Models.SendModel;
 
 import com.example.myapplication.R;
 
-import TagProject.example.myapplication.Services.NetworkServices;
+import TagProject.example.Application.Services.NetworkServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;

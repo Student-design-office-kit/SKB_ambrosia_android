@@ -1,4 +1,4 @@
-package TagProject.example.myapplication;
+package TagProject.example.Application;
 
 import org.junit.Test;
 

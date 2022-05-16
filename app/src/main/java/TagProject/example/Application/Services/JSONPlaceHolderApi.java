@@ -1,7 +1,7 @@
-package TagProject.example.myapplication.Services;
-import TagProject.example.myapplication.Models.Markers;
-import TagProject.example.myapplication.Models.ResponseModel;
-import TagProject.example.myapplication.Models.SendModel;
+package TagProject.example.Application.Services;
+import TagProject.example.Application.Models.Markers;
+import TagProject.example.Application.Models.ResponseModel;
+import TagProject.example.Application.Models.SendModel;
 
 import java.util.ArrayList;
 

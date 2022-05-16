@@ -34,7 +34,7 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name="TagProject.example.myapplication.MapsActivity"
+            android:name="TagProject.example.Application.MapsActivity"
             android:exported="true"
             android:screenOrientation="portrait"
             android:label="@string/title_activity_maps">

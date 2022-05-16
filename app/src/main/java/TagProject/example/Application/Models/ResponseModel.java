@@ -1,4 +1,4 @@
-package TagProject.example.myapplication.Models;
+package TagProject.example.Application.Models;
 
 import com.google.gson.annotations.SerializedName;
 

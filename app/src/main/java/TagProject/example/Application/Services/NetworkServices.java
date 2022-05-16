@@ -1,4 +1,4 @@
-package TagProject.example.myapplication.Services;
+package TagProject.example.Application.Services;
 
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;

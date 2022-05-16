@@ -1,8 +1,6 @@
-package TagProject.example.myapplication.Models;
+package TagProject.example.Application.Models;
 
 import com.google.gson.annotations.SerializedName;
-
-import java.util.List;
 
 public class Markers {
     @SerializedName("id")
