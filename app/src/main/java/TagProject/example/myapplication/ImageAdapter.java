@@ -1,4 +1,4 @@
-package com.example.myapplication;
+package TagProject.example.myapplication;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -7,21 +7,14 @@ import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.Base64;
-import android.util.Log;
 
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 
-import com.example.myapplication.Models.PhotoBase64;
-import com.example.myapplication.Services.NetworkServices;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 
 import java.io.ByteArrayOutputStream;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class ImageAdapter {
 

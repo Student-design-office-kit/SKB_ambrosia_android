@@ -1,4 +1,4 @@
-package com.example.myapplication;
+package TagProject.example.myapplication;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
@@ -25,11 +25,14 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.myapplication.Models.Markers;
-import com.example.myapplication.Models.PhotoBase64;
-import com.example.myapplication.Models.ResponseModel;
-import com.example.myapplication.Models.SendModel;
-import com.example.myapplication.Services.NetworkServices;
+import TagProject.example.myapplication.Models.Markers;
+import TagProject.example.myapplication.Models.PhotoBase64;
+import TagProject.example.myapplication.Models.ResponseModel;
+import TagProject.example.myapplication.Models.SendModel;
+
+import com.example.myapplication.R;
+
+import TagProject.example.myapplication.Services.NetworkServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -227,10 +230,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_TAKE_PHOTO_AMBROSE && resultCode == RESULT_OK) {
             getImageFromResult(data);
-            showDialog(mMap.getMyLocation().getLatitude() + ", " + mMap.getMyLocation().getLongitude(), 1, result.getPhoto());
+            showDialog(mMap.getMyLocation().getLatitude() + ", " + mMap.getMyLocation().getLongitude(), 0, result.getPhoto());
         } else if (requestCode == REQUEST_TAKE_PHOTO_PIT && resultCode == RESULT_OK) {
             getImageFromResult(data);
-            showDialog(mMap.getMyLocation().getLatitude() + ", " + mMap.getMyLocation().getLongitude(), 0, result.getPhoto());
+            showDialog(mMap.getMyLocation().getLatitude() + ", " + mMap.getMyLocation().getLongitude(), 1, result.getPhoto());
         }
     }
 

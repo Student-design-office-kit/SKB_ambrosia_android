@@ -1,4 +1,4 @@
-package com.example.myapplication.Models;
+package TagProject.example.myapplication.Models;
 
 public class MD5 {
     private String description;
