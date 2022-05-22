@@ -15,6 +15,7 @@ import android.graphics.Bitmap;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.StrictMode;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -33,6 +34,7 @@ import TagProject.example.Application.Models.SendModel;
 import com.example.myapplication.R;
 
 import TagProject.example.Application.Services.NetworkServices;
+
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -68,6 +70,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private LatLng myLocation;
     private ImageView ambrosia;
     private ImageView unevenness;
+    private int AMBROSIA_MARKER = 1;
+    private int PIT_MARKER = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,7 +112,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 LinearLayout info = new LinearLayout(getApplicationContext());
                 info.setOrientation(LinearLayout.VERTICAL);
                 ImageView snippet = new ImageView(getApplicationContext());
-                TextView title = new TextView(getApplicationContext());
+                /*TextView title = new TextView(getApplicationContext());
                 title.setMaxWidth(300);
 
                 title.setGravity(Gravity.CENTER);
@@ -116,7 +120,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     title.setText(titleInfo[1]);
                 } catch (Exception e) {
                     title.setText("No title");
-                }
+                }*/
 
                 StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
                 StrictMode.setThreadPolicy(policy);
@@ -128,7 +132,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     in = reader.getString("image_base64");
                     Log.d("myIn", in);
                     try {
-                        snippet.setImageBitmap(Bitmap.createScaledBitmap(adapter.decodeImage(in), 200, 200, false));
+                        snippet.setImageBitmap(Bitmap.createScaledBitmap(adapter.decodeImage(in), 350, 350, false));
                     } catch (Exception e) {
                         snippet.setImageResource(R.drawable.ic_flower);
                     }
@@ -140,7 +144,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
                 info.addView(snippet);
-                info.addView(title);
+                //info.addView(title);
                 return info;
             }
         });
@@ -188,13 +192,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void setAmbrosiaClickListener() {
         permissionCheck();
         getPhoto(REQUEST_TAKE_PHOTO_AMBROSE);
-        setAllMarkers();
     }
 
     private void setPitClickListener() {
         permissionCheck();
         getPhoto(REQUEST_TAKE_PHOTO_PIT);
-        setAllMarkers();
     }
 
     private void permissionCheck() {
@@ -230,10 +232,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_TAKE_PHOTO_AMBROSE && resultCode == RESULT_OK) {
             getImageFromResult(data);
-            showDialog(mMap.getMyLocation().getLatitude() + ", " + mMap.getMyLocation().getLongitude(), 0, result.getPhoto());
+            showDialog(mMap.getMyLocation().getLatitude() + ", " + mMap.getMyLocation().getLongitude(), AMBROSIA_MARKER, result.getPhoto());
         } else if (requestCode == REQUEST_TAKE_PHOTO_PIT && resultCode == RESULT_OK) {
             getImageFromResult(data);
-            showDialog(mMap.getMyLocation().getLatitude() + ", " + mMap.getMyLocation().getLongitude(), 1, result.getPhoto());
+            showDialog(mMap.getMyLocation().getLatitude() + ", " + mMap.getMyLocation().getLongitude(), PIT_MARKER, result.getPhoto());
         }
     }
 
@@ -255,6 +257,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     public void onResponse(Call<ArrayList<Markers>> call, Response<ArrayList<Markers>> response) {
                         if (response.code() == 200) {
                             allMarkers = response.body();
+                            Handler handler = new Handler();
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    setAllMarkers();
+                                }
+                            }, 1000);
                             Log.d("myLog", "accept \n" + response.body().get(0).toString());
                         } else Log.d("myLog", response.message());
                     }
@@ -269,12 +278,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public void setAllMarkers() {
         for (int i = 0; i < allMarkers.size(); i++) {
-            if (allMarkers.get(i).getMarkerType() == 1) {
+            /*if (allMarkers.get(i).getMarkerType() == 1) {
                 markers.add(mMap.addMarker(new MarkerOptions().position(new LatLng(allMarkers.get(i).getLat(),
                         allMarkers.get(i).getLon())).title(allMarkers.get(i).getId()
                         + "some_id" + allMarkers.get(i).getDescription())
                         .icon(adapter.getBitmapFromVectorDrawable(getApplicationContext(), R.drawable.ic_pit))));
             } else {
+                markers.add(mMap.addMarker(new MarkerOptions().position(new LatLng(allMarkers.get(i).getLat(),
+                        allMarkers.get(i).getLon())).title(allMarkers.get(i).getId()
+                        + "some_id" + allMarkers.get(i).getDescription())
+                        .icon(adapter.getBitmapFromVectorDrawable(getApplicationContext(), R.drawable.ic_flower))));
+            }*/
+
+            if (allMarkers.get(i).getMarkerType() == AMBROSIA_MARKER) {
                 markers.add(mMap.addMarker(new MarkerOptions().position(new LatLng(allMarkers.get(i).getLat(),
                         allMarkers.get(i).getLon())).title(allMarkers.get(i).getId()
                         + "some_id" + allMarkers.get(i).getDescription())
@@ -332,7 +348,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onResponse(Call<ResponseModel> call, Response<ResponseModel> response) {
                 if (response.code() == 200) {
                     Log.d("alert", response.body().getMsg());
-                    allMarkers = getAllMarkers();
+                } else if (response.code() == 202) {
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            getAllMarkers();
+                        }
+                    }, 1000);
                 } else Log.d("alert", response.message());
                 Toast.makeText(getApplicationContext(), "Метка отправлена на проверку",
                         Toast.LENGTH_LONG).show();
