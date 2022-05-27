@@ -15,9 +15,9 @@
     <application
         android:usesCleartextTraffic="true"
         android:allowBackup="true"
-        android:icon="@drawable/tag_project_icon"
+        android:icon="@mipmap/ic_launcher"
         android:label="@string/title_activity_maps"
-        android:roundIcon="@drawable/tag_project_icon"
+        android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MyApplication">
 
