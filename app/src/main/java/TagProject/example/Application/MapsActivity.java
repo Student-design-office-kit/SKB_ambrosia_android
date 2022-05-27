@@ -69,7 +69,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private ImageAdapter adapter = new ImageAdapter();
     private LatLng myLocation;
     private ImageView ambrosia;
-    private ImageView unevenness;
+    private ImageView refresh;
     private int AMBROSIA_MARKER = 1;
     private int PIT_MARKER = 0;
 
@@ -98,6 +98,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap = googleMap;
         markers = new ArrayList<>();
         setAllMarkers();
+        if (allMarkers.size() != 0)
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(allMarkers.get(allMarkers.size() - 1).getLat(), allMarkers.get(allMarkers.size() - 1).getLon())));
         mMap.setMinZoomPreference(12);
         mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
             @Override
@@ -168,7 +170,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 setAmbrosiaClickListener();
             }
         });
-        unevenness.setOnClickListener(new View.OnClickListener() {
+        refresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 setPitClickListener();
@@ -195,8 +197,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void setPitClickListener() {
-        permissionCheck();
-        getPhoto(REQUEST_TAKE_PHOTO_PIT);
+        getAllMarkers();
+        setAllMarkers();
     }
 
     private void permissionCheck() {
@@ -222,7 +224,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void findView() {
         ambrosia = findViewById(R.id.ambrosia);
-        unevenness = findViewById(R.id.unevenness);
+        refresh = findViewById(R.id.restore);
         mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
     }
@@ -257,13 +259,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     public void onResponse(Call<ArrayList<Markers>> call, Response<ArrayList<Markers>> response) {
                         if (response.code() == 200) {
                             allMarkers = response.body();
-                            Handler handler = new Handler();
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    setAllMarkers();
-                                }
-                            }, 1000);
                             Log.d("myLog", "accept \n" + response.body().get(0).toString());
                         } else Log.d("myLog", response.message());
                     }
@@ -290,16 +285,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         .icon(adapter.getBitmapFromVectorDrawable(getApplicationContext(), R.drawable.ic_flower))));
             }*/
 
-            if (allMarkers.get(i).getMarkerType() == AMBROSIA_MARKER) {
-                markers.add(mMap.addMarker(new MarkerOptions().position(new LatLng(allMarkers.get(i).getLat(),
-                        allMarkers.get(i).getLon())).title(allMarkers.get(i).getId()
-                        + "some_id" + allMarkers.get(i).getDescription())
-                        .icon(adapter.getBitmapFromVectorDrawable(getApplicationContext(), R.drawable.ic_flower))));
-            }
+            markers.add(mMap.addMarker(new MarkerOptions().position(new LatLng(allMarkers.get(i).getLat(),
+                    allMarkers.get(i).getLon())).title(allMarkers.get(i).getId()
+                    + "some_id" + allMarkers.get(i).getDescription())
+                    .icon(adapter.getBitmapFromVectorDrawable(getApplicationContext(), R.drawable.ic_flower))));
         }
 
-        if (allMarkers.size() != 0)
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(allMarkers.get(allMarkers.size() - 1).getLat(), allMarkers.get(allMarkers.size() - 1).getLon())));
     }
 
     public void showDialog(String gps, int request_type, String image) {

@@ -25,13 +25,12 @@
             android:background="@drawable/ic_bnv_flower" />
 
         <ImageView
-            android:visibility="invisible"
-            android:id="@+id/unevenness"
+            android:id="@+id/restore"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:layout_marginRight="90dp"
+            android:layout_marginRight="50dp"
             android:layout_gravity="center|right"
-            android:background="@drawable/ic_bnv_car"  />
+            android:background="@drawable/ic_refresh"  />
     </com.google.android.material.bottomnavigation.BottomNavigationView>
 </FrameLayout>
 
