@@ -1,6 +1,7 @@
 package TagProject.example.Application;
 
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
@@ -21,6 +22,7 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -68,8 +70,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private PhotoBase64 result = new PhotoBase64("-");
     private ImageAdapter adapter = new ImageAdapter();
     private LatLng myLocation;
-    private ImageView ambrosia;
-    private ImageView refresh;
+    private ImageView camera;
+    private ImageView restore;
+    private ImageView map;
+    private FrameLayout myMap;
+    private AppCompatButton takePhoto;
     private int AMBROSIA_MARKER = 1;
     private int PIT_MARKER = 0;
 
@@ -114,15 +119,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 LinearLayout info = new LinearLayout(getApplicationContext());
                 info.setOrientation(LinearLayout.VERTICAL);
                 ImageView snippet = new ImageView(getApplicationContext());
-                /*TextView title = new TextView(getApplicationContext());
-                title.setMaxWidth(300);
-
-                title.setGravity(Gravity.CENTER);
-                try {
-                    title.setText(titleInfo[1]);
-                } catch (Exception e) {
-                    title.setText("No title");
-                }*/
 
                 StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
                 StrictMode.setThreadPolicy(policy);
@@ -134,7 +130,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     in = reader.getString("image_base64");
                     Log.d("myIn", in);
                     try {
-                        snippet.setImageBitmap(Bitmap.createScaledBitmap(adapter.decodeImage(in), 350, 350, false));
+                        snippet.setImageBitmap(Bitmap.createScaledBitmap(adapter.decodeImage(in), 350, 550, false));
                     } catch (Exception e) {
                         snippet.setImageResource(R.drawable.ic_flower);
                     }
@@ -144,9 +140,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     e.printStackTrace();
                 }
 
-
                 info.addView(snippet);
-                //info.addView(title);
                 return info;
             }
         });
@@ -164,16 +158,31 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
         mMap.setMyLocationEnabled(true);
 
-        ambrosia.setOnClickListener(new View.OnClickListener() {
+        takePhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setAmbrosiaClickListener();
+                setTakePhoto();
             }
         });
-        refresh.setOnClickListener(new View.OnClickListener() {
+        restore.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setPitClickListener();
+                getAllMarkers();
+                setAllMarkers();
+            }
+        });
+        camera.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                myMap.setVisibility(View.INVISIBLE);
+                takePhoto.setVisibility(View.VISIBLE);
+            }
+        });
+        map.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                myMap.setVisibility(View.VISIBLE);
+                takePhoto.setVisibility(View.INVISIBLE);
             }
         });
     }
@@ -191,14 +200,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    private void setAmbrosiaClickListener() {
+    private void setTakePhoto() {
         permissionCheck();
         getPhoto(REQUEST_TAKE_PHOTO_AMBROSE);
-    }
-
-    private void setPitClickListener() {
-        getAllMarkers();
-        setAllMarkers();
     }
 
     private void permissionCheck() {
@@ -223,8 +227,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void findView() {
-        ambrosia = findViewById(R.id.ambrosia);
-        refresh = findViewById(R.id.restore);
+        camera = findViewById(R.id.item_camera);
+        map = findViewById(R.id.item_map);
+        restore = findViewById(R.id.restore);
+        takePhoto = findViewById(R.id.takePhoto);
+        myMap = findViewById(R.id.myMap);
         mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
     }
@@ -273,18 +280,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public void setAllMarkers() {
         for (int i = 0; i < allMarkers.size(); i++) {
-            /*if (allMarkers.get(i).getMarkerType() == 1) {
-                markers.add(mMap.addMarker(new MarkerOptions().position(new LatLng(allMarkers.get(i).getLat(),
-                        allMarkers.get(i).getLon())).title(allMarkers.get(i).getId()
-                        + "some_id" + allMarkers.get(i).getDescription())
-                        .icon(adapter.getBitmapFromVectorDrawable(getApplicationContext(), R.drawable.ic_pit))));
-            } else {
-                markers.add(mMap.addMarker(new MarkerOptions().position(new LatLng(allMarkers.get(i).getLat(),
-                        allMarkers.get(i).getLon())).title(allMarkers.get(i).getId()
-                        + "some_id" + allMarkers.get(i).getDescription())
-                        .icon(adapter.getBitmapFromVectorDrawable(getApplicationContext(), R.drawable.ic_flower))));
-            }*/
-
             markers.add(mMap.addMarker(new MarkerOptions().position(new LatLng(allMarkers.get(i).getLat(),
                     allMarkers.get(i).getLon())).title(allMarkers.get(i).getId()
                     + "some_id" + allMarkers.get(i).getDescription())
