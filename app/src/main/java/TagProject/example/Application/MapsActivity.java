@@ -82,12 +82,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-        findView();
         if (isGeoDisabled()) {
             startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
         }
-        mapFragment.getMapAsync(this);
-
+        findView();
     }
 
     public boolean isGeoDisabled() {
@@ -144,7 +142,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 return info;
             }
         });
-
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             int permissionStatus = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
             if (permissionStatus == PackageManager.PERMISSION_GRANTED) {
@@ -157,34 +154,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             return;
         }
         mMap.setMyLocationEnabled(true);
-
-        takePhoto.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setTakePhoto();
-            }
-        });
-        restore.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getAllMarkers();
-                setAllMarkers();
-            }
-        });
-        camera.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                myMap.setVisibility(View.INVISIBLE);
-                takePhoto.setVisibility(View.VISIBLE);
-            }
-        });
-        map.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                myMap.setVisibility(View.VISIBLE);
-                takePhoto.setVisibility(View.INVISIBLE);
-            }
-        });
     }
 
     private void setOnMyLocationChangeListener() {
@@ -232,8 +201,40 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         restore = findViewById(R.id.restore);
         takePhoto = findViewById(R.id.takePhoto);
         myMap = findViewById(R.id.myMap);
+
+        takePhoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setTakePhoto();
+            }
+        });
+        restore.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getAllMarkers();
+                setAllMarkers();
+            }
+        });
+        camera.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                myMap.setVisibility(View.INVISIBLE);
+                takePhoto.setVisibility(View.VISIBLE);
+            }
+        });
+        map.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                myMap.setVisibility(View.VISIBLE);
+                takePhoto.setVisibility(View.INVISIBLE);
+            }
+        });
+
         mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
+
+        assert mapFragment != null;
+        mapFragment.getMapAsync(this);
     }
 
     @Override
@@ -342,7 +343,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             getAllMarkers();
                         }
                     }, 1000);
-                } else Log.d("alert", response.message());
+                } else Log.d("alert", response.message() + " " + response.code());
                 Toast.makeText(getApplicationContext(), "Метка отправлена на проверку",
                         Toast.LENGTH_LONG).show();
             }
