@@ -1,6 +1,5 @@
 package TagProject.example.Application;
 
-import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -15,8 +14,11 @@ import androidx.core.app.ActivityCompat;
 
 import com.example.myapplication.R;
 
+/** Класс отвечает за отображение приветсвенного экрана
+    и получение разрешения на использование геолокации */
 public class SplashScreen extends AppCompatActivity {
 
+    /** Метод собирает и запускает экран */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,6 +37,7 @@ public class SplashScreen extends AppCompatActivity {
         splashScreen();
     }
 
+    /** Метод отображает анимацию экрана */
     void splashScreen(){
         ImageView backgroundImage = findViewById(R.id.SplashScreenImage);
         backgroundImage.startAnimation(AnimationUtils.loadAnimation(this, R.anim.side_slide));
@@ -48,6 +51,7 @@ public class SplashScreen extends AppCompatActivity {
         }, 2000);
     }
 
+    /** Метод получает разрешение на геолокацию */
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         switch (requestCode) {

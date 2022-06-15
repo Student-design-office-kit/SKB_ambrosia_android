@@ -2,6 +2,7 @@ package TagProject.example.Application;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.AppCompatButton;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
@@ -20,12 +21,10 @@ import android.os.Handler;
 import android.os.StrictMode;
 import android.provider.MediaStore;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import TagProject.example.Application.Models.Markers;
@@ -59,25 +58,30 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+/** Класс отвечает за взаимодействие с
+    картой и отправку меток на сервер */
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
-    private GoogleMap mMap;
-    private ArrayList<Marker> markers;
-    private SupportMapFragment mapFragment;
-    private ArrayList<Markers> allMarkers = getAllMarkers();
-    private static final int REQUEST_TAKE_PHOTO_AMBROSE = 1;
-    private static final int REQUEST_TAKE_PHOTO_PIT = 2;
-    private PhotoBase64 result = new PhotoBase64("-");
-    private ImageAdapter adapter = new ImageAdapter();
-    private LatLng myLocation;
+    private GoogleMap mMap; //Google карта
+    private ArrayList<Marker> markers; //Массив с метками на карте
+    private SupportMapFragment mapFragment; //Экран с картой
+    private ArrayList<Markers> allMarkers = getAllMarkers(); //Массив со всеми меткми на сервере
+    private static final int REQUEST_TAKE_PHOTO_AMBROSE = 1; //Код для ответа от камеры
+    private PhotoBase64 result = new PhotoBase64("-"); //Результат конвертации в base64
+    private ImageAdapter adapter = new ImageAdapter(); //Класс для конвертации изображений
+    private LatLng myLocation; //Текущая геолокация
+
+    //Элементы разметки (View)
     private ImageView camera;
     private ImageView restore;
+    private ConstraintLayout cameraScreen;
     private ImageView map;
+    private ImageView question;
     private FrameLayout myMap;
     private AppCompatButton takePhoto;
-    private int AMBROSIA_MARKER = 1;
-    private int PIT_MARKER = 0;
 
+
+    /** Метод собирает и запускает экран */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -88,6 +92,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         findView();
     }
 
+    /** Метод проверяет состояние геолокации (вкл / выкл) на устройстве */
     public boolean isGeoDisabled() {
         LocationManager mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         boolean mIsGPSEnabled = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
@@ -96,6 +101,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return mIsGeoDisabled;
     }
 
+    /** Метод переопределяет состояние карты.
+        Устанавливает положение камеры и формат
+        представления содержимого окон над маркерами.
+        Устанавливает метки на карту */
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -107,11 +116,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
             @Override
             public View getInfoWindow(Marker marker) {
-                return null;
-            }
-
-            @Override
-            public View getInfoContents(Marker marker) {
                 String titleInfo[] = marker.getTitle().split("some_id");
                 String url = "http://tagproject-api.sfedu.ru/api/v1/map/markers/" + titleInfo[0] + "/get_image_base64";
                 LinearLayout info = new LinearLayout(getApplicationContext());
@@ -128,9 +132,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     in = reader.getString("image_base64");
                     Log.d("myIn", in);
                     try {
-                        snippet.setImageBitmap(Bitmap.createScaledBitmap(adapter.decodeImage(in), 350, 550, false));
+                        snippet.setImageBitmap(Bitmap.createScaledBitmap(adapter.decodeImage(in), 200, 280, false));
                     } catch (Exception e) {
-                        snippet.setImageResource(R.drawable.ic_flower);
+                        snippet.setImageResource(R.drawable.map_tag);
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -140,6 +144,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 info.addView(snippet);
                 return info;
+            }
+
+            @Override
+            public View getInfoContents(Marker marker) {
+                return null;
             }
         });
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -156,6 +165,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.setMyLocationEnabled(true);
     }
 
+    /** Метод обрабатывает изменение геолокации пользователя */
     private void setOnMyLocationChangeListener() {
         if (mMap != null) {
             mMap.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener() {
@@ -169,11 +179,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    /** Метод проверяет проверяет наличие доступа к
+        камере устройства и открывает её */
     private void setTakePhoto() {
         permissionCheck();
         getPhoto(REQUEST_TAKE_PHOTO_AMBROSE);
     }
 
+    /** Метод проверяет проверяет наличие
+        доступа ккамере устройства */
     private void permissionCheck() {
         try {
             if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
@@ -186,6 +200,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    /** Метод вызывает стандартное приложение камеры
+        устройства с ожиданием результата */
     private void getPhoto(int requestCode) {
         Intent takePhotoIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         try {
@@ -195,13 +211,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    /** Метод находит все элементы разметки и
+        устанавливает обработчики нажатий на них */
     private void findView() {
         camera = findViewById(R.id.item_camera);
         map = findViewById(R.id.item_map);
         restore = findViewById(R.id.restore);
         takePhoto = findViewById(R.id.takePhoto);
         myMap = findViewById(R.id.myMap);
+        cameraScreen = findViewById(R.id.cameraScreen);
+        question = findViewById(R.id.question);
 
+        question.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) { }
+        });
         takePhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -218,6 +242,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         camera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                cameraScreen.setVisibility(View.VISIBLE);
+                camera.setImageResource(R.drawable.camera_green);
+                map.setImageResource(R.drawable.tag_grey);
                 myMap.setVisibility(View.INVISIBLE);
                 takePhoto.setVisibility(View.VISIBLE);
             }
@@ -225,6 +252,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         map.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                cameraScreen.setVisibility(View.INVISIBLE);
+                camera.setImageResource(R.drawable.camera_grey);
+                map.setImageResource(R.drawable.tag_green);
                 myMap.setVisibility(View.VISIBLE);
                 takePhoto.setVisibility(View.INVISIBLE);
             }
@@ -237,18 +267,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
     }
 
+    /** Метод обрабатывает изображение с камеры и
+        открывает диалог с пользователем */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_TAKE_PHOTO_AMBROSE && resultCode == RESULT_OK) {
             getImageFromResult(data);
-            showDialog(mMap.getMyLocation().getLatitude() + ", " + mMap.getMyLocation().getLongitude(), AMBROSIA_MARKER, result.getPhoto());
-        } else if (requestCode == REQUEST_TAKE_PHOTO_PIT && resultCode == RESULT_OK) {
-            getImageFromResult(data);
-            showDialog(mMap.getMyLocation().getLatitude() + ", " + mMap.getMyLocation().getLongitude(), PIT_MARKER, result.getPhoto());
+            showDialog(mMap.getMyLocation().getLatitude() + ", " + mMap.getMyLocation().getLongitude(), 1, result.getPhoto());
         }
     }
 
+    /** Метод конвертирует узображение в base64
+        формат для отправки на сервер */
     private void getImageFromResult(Intent data) {
         Bundle extras = data.getExtras();
         Bitmap thumbnailBitmap = (Bitmap) extras.get("data");
@@ -257,6 +288,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Log.d("getImage", result.getPhoto());
     }
 
+    /** Метод получает все маркеры с сервера */
     public ArrayList<Markers> getAllMarkers() {
         ArrayList<Markers> markersArrayList = new ArrayList<>();
         NetworkServices.getInstance()
@@ -279,16 +311,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return markersArrayList;
     }
 
+    /** Метод устанавливает маркеры на карту и
+        сохраняет необходимые данные в
+        title каждого маркера для дальнейшего парсинга */
     public void setAllMarkers() {
         for (int i = 0; i < allMarkers.size(); i++) {
             markers.add(mMap.addMarker(new MarkerOptions().position(new LatLng(allMarkers.get(i).getLat(),
                     allMarkers.get(i).getLon())).title(allMarkers.get(i).getId()
                     + "some_id" + allMarkers.get(i).getDescription())
-                    .icon(adapter.getBitmapFromVectorDrawable(getApplicationContext(), R.drawable.ic_flower))));
+                    .icon(adapter.getBitmapFromVectorDrawable(getApplicationContext(), R.drawable.map_tag))));
         }
 
     }
 
+    /** Метод вызывает диалог с пользователем об
+        отправке изображения и геолокации на сервер */
     public void showDialog(String gps, int request_type, String image) {
         View promptsView = View.inflate(this, R.layout.alert_view, null);
         final TextInputEditText userName = promptsView.findViewById(R.id.input_name);
@@ -328,6 +365,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         alertDialog.show();
     }
 
+    /** Метод выполняет отправку данных на сервер */
     public void sendImage(SendModel sendModel) {
         Log.d("sendModel", sendModel.toString());
         NetworkServices.getInstance().getJSONApi().uploadMarker(sendModel).enqueue(new Callback<ResponseModel>() {

@@ -10,6 +10,7 @@ import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 
+/** Вспомогательный интерфейс для отправки запросов на сервер */
 public interface JSONPlaceHolderApi {
     @GET("markers")
     Call<ArrayList<Markers>> getAllMarks();
