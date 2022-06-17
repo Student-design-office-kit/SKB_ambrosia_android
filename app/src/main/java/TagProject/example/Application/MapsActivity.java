@@ -41,6 +41,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -116,6 +117,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        String style = "[\n" +
+                "{\n" +
+                "\"featureType\" : \"all\",\n" +
+                "\"elementType\": \"labels\",\n" +
+                "\"stylers\": [\n" +
+                "{\n" +
+                "\"visibility\": \"off\"\n" +
+                "}\n" +
+                "]\n" +
+                "}\n" +
+                "]";
+        mMap.setMapStyle(new MapStyleOptions(style));
+
         markers = new ArrayList<>();
         setAllMarkers();
         if (allMarkers.size() != 0)

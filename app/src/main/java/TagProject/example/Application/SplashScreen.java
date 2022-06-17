@@ -34,21 +34,8 @@ public class SplashScreen extends AppCompatActivity {
             }
         }
 
-        splashScreen();
-    }
-
-    /** Метод отображает анимацию экрана */
-    void splashScreen(){
-        ImageView backgroundImage = findViewById(R.id.SplashScreenImage);
-        backgroundImage.startAnimation(AnimationUtils.loadAnimation(this, R.anim.side_slide));
-
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                startActivity(new Intent(getApplicationContext(), MapsActivity.class));
-                finish();
-            }
-        }, 2000);
+        startActivity(new Intent(getApplicationContext(), MapsActivity.class));
+        finish();
     }
 
     /** Метод получает разрешение на геолокацию */
@@ -57,8 +44,8 @@ public class SplashScreen extends AppCompatActivity {
         switch (requestCode) {
             case 1:
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                    splashScreen();
+                    startActivity(new Intent(getApplicationContext(), MapsActivity.class));
+                    finish();
                 } else {
                     Toast.makeText(this, "your message", Toast.LENGTH_SHORT).show();
                 }
