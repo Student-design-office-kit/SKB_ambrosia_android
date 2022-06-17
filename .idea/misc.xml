@@ -21,12 +21,15 @@
         <entry key="..\:/Projects/Android/AmbrouseFinaly/app/src/main/res/layout/activity_splash_screen.xml" value="0.17552083333333332" />
         <entry key="..\:/Projects/Android/AmbrouseFinaly/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.1" />
         <entry key="..\:/Projects/Android/AmbrouseFix/app/src/main/res/drawable/btn_back.xml" value="0.1065" />
+        <entry key="..\:/Projects/Android/AmbrouseFix/app/src/main/res/drawable/btn_send_back.xml" value="0.1065" />
         <entry key="..\:/Projects/Android/AmbrouseFix/app/src/main/res/drawable/ic_baseline_image_24.xml" value="0.1065" />
         <entry key="..\:/Projects/Android/AmbrouseFix/app/src/main/res/drawable/ic_bnv_flower.xml" value="0.131" />
         <entry key="..\:/Projects/Android/AmbrouseFix/app/src/main/res/drawable/ic_flower.xml" value="0.131" />
         <entry key="..\:/Projects/Android/AmbrouseFix/app/src/main/res/drawable/ic_refresh.xml" value="0.1065" />
         <entry key="..\:/Projects/Android/AmbrouseFix/app/src/main/res/layout/activity_maps.xml" value="0.22" />
         <entry key="..\:/Projects/Android/AmbrouseFix/app/src/main/res/layout/activity_splash_screen.xml" value="0.15477293790546803" />
+        <entry key="..\:/Projects/Android/AmbrouseFix/app/src/main/res/layout/alert_view.xml" value="0.13333333333333333" />
+        <entry key="..\:/Projects/Android/AmbrouseFix/app/src/main/res/layout/question_dialog.xml" value="0.1" />
         <entry key="..\:/Projects/Android/AmbrouseFix/app/src/main/res/menu/menu_bottom_navigation.xml" value="0.17552083333333332" />
         <entry key="app/src/main/res/layout/activity_maps.xml" value="0.23867753623188406" />
         <entry key="app/src/main/res/layout/alert_view.xml" value="0.20052083333333334" />

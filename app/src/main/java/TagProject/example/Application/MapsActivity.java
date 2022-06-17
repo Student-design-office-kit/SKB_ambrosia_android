@@ -58,8 +58,10 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-/** Класс отвечает за взаимодействие с
-    картой и отправку меток на сервер */
+/**
+ * Класс отвечает за взаимодействие с
+ * картой и отправку меток на сервер
+ */
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap; //Google карта
@@ -81,7 +83,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private AppCompatButton takePhoto;
 
 
-    /** Метод собирает и запускает экран */
+    /**
+     * Метод собирает и запускает экран
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -92,7 +96,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         findView();
     }
 
-    /** Метод проверяет состояние геолокации (вкл / выкл) на устройстве */
+    /**
+     * Метод проверяет состояние геолокации (вкл / выкл) на устройстве
+     */
     public boolean isGeoDisabled() {
         LocationManager mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         boolean mIsGPSEnabled = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
@@ -101,10 +107,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return mIsGeoDisabled;
     }
 
-    /** Метод переопределяет состояние карты.
-        Устанавливает положение камеры и формат
-        представления содержимого окон над маркерами.
-        Устанавливает метки на карту */
+    /**
+     * Метод переопределяет состояние карты.
+     * Устанавливает положение камеры и формат
+     * представления содержимого окон над маркерами.
+     * Устанавливает метки на карту
+     */
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -165,7 +173,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.setMyLocationEnabled(true);
     }
 
-    /** Метод обрабатывает изменение геолокации пользователя */
+    /**
+     * Метод обрабатывает изменение геолокации пользователя
+     */
     private void setOnMyLocationChangeListener() {
         if (mMap != null) {
             mMap.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener() {
@@ -179,15 +189,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    /** Метод проверяет проверяет наличие доступа к
-        камере устройства и открывает её */
+    /**
+     * Метод проверяет проверяет наличие доступа к
+     * камере устройства и открывает её
+     */
     private void setTakePhoto() {
         permissionCheck();
         getPhoto(REQUEST_TAKE_PHOTO_AMBROSE);
     }
 
-    /** Метод проверяет проверяет наличие
-        доступа ккамере устройства */
+    /**
+     * Метод проверяет проверяет наличие
+     * доступа ккамере устройства
+     */
     private void permissionCheck() {
         try {
             if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
@@ -200,8 +214,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    /** Метод вызывает стандартное приложение камеры
-        устройства с ожиданием результата */
+    /**
+     * Метод вызывает стандартное приложение камеры
+     * устройства с ожиданием результата
+     */
     private void getPhoto(int requestCode) {
         Intent takePhotoIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         try {
@@ -211,8 +227,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    /** Метод находит все элементы разметки и
-        устанавливает обработчики нажатий на них */
+    /**
+     * Метод находит все элементы разметки и
+     * устанавливает обработчики нажатий на них
+     */
     private void findView() {
         camera = findViewById(R.id.item_camera);
         map = findViewById(R.id.item_map);
@@ -224,7 +242,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         question.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) { }
+            public void onClick(View view) {
+                showQuestionDialog();
+            }
         });
         takePhoto.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -267,8 +287,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
     }
 
-    /** Метод обрабатывает изображение с камеры и
-        открывает диалог с пользователем */
+    /**
+     * Метод обрабатывает изображение с камеры и
+     * открывает диалог с пользователем
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -278,8 +300,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    /** Метод конвертирует узображение в base64
-        формат для отправки на сервер */
+    /**
+     * Метод конвертирует узображение в base64
+     * формат для отправки на сервер
+     */
     private void getImageFromResult(Intent data) {
         Bundle extras = data.getExtras();
         Bitmap thumbnailBitmap = (Bitmap) extras.get("data");
@@ -288,7 +312,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Log.d("getImage", result.getPhoto());
     }
 
-    /** Метод получает все маркеры с сервера */
+    /**
+     * Метод получает все маркеры с сервера
+     */
     public ArrayList<Markers> getAllMarkers() {
         ArrayList<Markers> markersArrayList = new ArrayList<>();
         NetworkServices.getInstance()
@@ -311,9 +337,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return markersArrayList;
     }
 
-    /** Метод устанавливает маркеры на карту и
-        сохраняет необходимые данные в
-        title каждого маркера для дальнейшего парсинга */
+    /**
+     * Метод устанавливает маркеры на карту и
+     * сохраняет необходимые данные в
+     * title каждого маркера для дальнейшего парсинга
+     */
     public void setAllMarkers() {
         for (int i = 0; i < allMarkers.size(); i++) {
             markers.add(mMap.addMarker(new MarkerOptions().position(new LatLng(allMarkers.get(i).getLat(),
@@ -324,48 +352,49 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-    /** Метод вызывает диалог с пользователем об
-        отправке изображения и геолокации на сервер */
+    /**
+     * Метод вызывает диалог с пользователем об
+     * отправке изображения и геолокации на сервер
+     */
     public void showDialog(String gps, int request_type, String image) {
         View promptsView = View.inflate(this, R.layout.alert_view, null);
-        final TextInputEditText userName = promptsView.findViewById(R.id.input_name);
         final TextInputEditText userInput = promptsView.findViewById(R.id.input_text);
         androidx.appcompat.app.AlertDialog alertDialog = new MaterialAlertDialogBuilder(MapsActivity.this, R.style.RoundShapeTheme)
-                .setTitle("Отправка метки")
-                .setPositiveButton("Ok", null)
-                .setNegativeButton("Отмена", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.cancel();
-                    }
-                })
                 .setView(promptsView)
                 .create();
-        alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+
+        promptsView.findViewById(R.id.btn_send).setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onShow(DialogInterface dialogInterface) {
-                ((androidx.appcompat.app.AlertDialog) alertDialog).getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        String name = userName.getText().toString();
-                        String info = userInput.getText().toString();
-                        if (image.length() == 0) alertDialog.cancel();
-                        if (name.length() < 2 || info.length() < 3) {
-                            Toast.makeText(getApplicationContext(), "Заполните все поля", Toast.LENGTH_SHORT).show();
-                        } else {
-                            sendImage(new SendModel(name, info, gps, request_type, image));
-                            alertDialog.cancel();
-                            alertDialog.dismiss();
-                        }
-                    }
-                });
+            public void onClick(View view) {
+                String name = "Без имени";
+                String info = userInput.getText().toString();
+                if (info == null) info = "Описание отсутствует";
+                if (image.length() == 0) alertDialog.cancel();
+                sendImage(new SendModel(name, info, gps, request_type, image));
+                alertDialog.cancel();
+                alertDialog.dismiss();
             }
         });
 
         alertDialog.show();
     }
 
-    /** Метод выполняет отправку данных на сервер */
+    /**
+     * Метод вызывает диалоговое окно
+     * с описанием идеи приложения
+     */
+    public void showQuestionDialog(){
+        View promptsView = View.inflate(this, R.layout.question_dialog, null);
+        androidx.appcompat.app.AlertDialog alertDialog = new MaterialAlertDialogBuilder(MapsActivity.this, R.style.RoundShapeTheme)
+                .setView(promptsView)
+                .create();
+
+        alertDialog.show();
+    }
+
+    /**
+     * Метод выполняет отправку данных на сервер
+     */
     public void sendImage(SendModel sendModel) {
         Log.d("sendModel", sendModel.toString());
         NetworkServices.getInstance().getJSONApi().uploadMarker(sendModel).enqueue(new Callback<ResponseModel>() {
