@@ -231,6 +231,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     /**
      * Метод вызывает стандартное приложение камеры
      * устройства с ожиданием результата
+     *
+     * @param requestCode - код ответа для получения изображения (Integer)
      */
     private void getPhoto(int requestCode) {
         Intent takePhotoIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -369,6 +371,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     /**
      * Метод вызывает диалог с пользователем об
      * отправке изображения и геолокации на сервер
+     *
+     * @param gps - долгота и широта, на которой расположен пользователь (String через запятую)
+     * @param request_type - тип отправляемой метки (амброзия) (Integer)
+     * @param image - base64 изображение (String)
      */
     public void showDialog(String gps, int request_type, String image) {
         View promptsView = View.inflate(this, R.layout.alert_view, null);
@@ -408,6 +414,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     /**
      * Метод выполняет отправку данных на сервер
+     *
+     * @param sendModel - отправляемая модель с описанием (SendModel)
      */
     public void sendImage(SendModel sendModel) {
         Log.d("sendModel", sendModel.toString());

@@ -2,6 +2,7 @@ package TagProject.example.Application.Models;
 
 import com.google.gson.annotations.SerializedName;
 
+/**Класс для модели изображения в base64 формате */
 public class PhotoBase64 {
     @SerializedName("photo_base64")
     private String photo;

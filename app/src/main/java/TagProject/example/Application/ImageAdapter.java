@@ -22,7 +22,10 @@ public class ImageAdapter {
     /** Метод конструктор класса */
     public ImageAdapter(){}
 
-    /** Метод кодирует изображение из Bitmap в base64 формат */
+    /** Метод кодирует изображение из Bitmap в base64 формат
+     *
+     * @param image - полученное камерой изображение (Bitmap)
+     */
     public String encodeImage(Bitmap image){
         String encodeImage;
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -32,14 +35,21 @@ public class ImageAdapter {
         return encodeImage;
     }
 
-    /** Метод декодирует изображение из base64 в Bitmap формат */
+    /** Метод декодирует изображение из base64 в Bitmap формат
+     *
+     * @param image - base64 строка с изображением (String)
+     * */
     public Bitmap decodeImage(String image){
         byte[] imageBytes = Base64.decode(image, Base64.DEFAULT);
         return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
     }
 
     /** Метод конвертирует иконку метки
-        в подходящий для карты формат */
+        в подходящий для карты формат
+
+        @param context - контекст (Context)
+        @param drawableId - id ресурса для конвертации (Integer)
+     */
     public static BitmapDescriptor getBitmapFromVectorDrawable(Context context, int drawableId) {
         Drawable drawable = ContextCompat.getDrawable(context, drawableId);
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {

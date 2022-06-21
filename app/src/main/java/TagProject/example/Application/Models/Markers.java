@@ -2,6 +2,8 @@ package TagProject.example.Application.Models;
 
 import com.google.gson.annotations.SerializedName;
 
+/**Класс описывающий структуру каждого маркера
+ * с удалённой базы данных */
 public class Markers {
     @SerializedName("id")
     private Integer id;
