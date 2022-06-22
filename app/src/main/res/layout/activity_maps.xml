@@ -59,7 +59,19 @@
             android:layout_height="40dp"
             android:layout_marginTop="70dp"
             android:layout_marginRight="10dp"
-            android:background="@drawable/question"
+            android:background="@drawable/question_frame"
+            android:layout_gravity="top|right"/>
+
+        <TextView
+            android:id="@+id/question_text"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="70dp"
+            android:layout_marginRight="10dp"
+            android:text="\?"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:textSize="26sp"
             android:layout_gravity="top|right"/>
     </FrameLayout>
 
