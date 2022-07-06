@@ -272,9 +272,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(View v) {
                 getAllMarkers();
-                setAllMarkers();
-                Toast.makeText(getApplicationContext(), "Карта обновлена", Toast.LENGTH_SHORT).show();
-            }
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        setAllMarkers();
+                        Toast.makeText(getApplicationContext(), "Карта обновлена", Toast.LENGTH_SHORT).show();
+                    }
+                },500);
+                }
         });
         camera.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -360,6 +365,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * title каждого маркера для дальнейшего парсинга
      */
     public void setAllMarkers() {
+        mMap.clear();
         for (int i = 0; i < allMarkers.size(); i++) {
             markers.add(mMap.addMarker(new MarkerOptions().position(new LatLng(allMarkers.get(i).getLat(),
                     allMarkers.get(i).getLon())).title(allMarkers.get(i).getId()
