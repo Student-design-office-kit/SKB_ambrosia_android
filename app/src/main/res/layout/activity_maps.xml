@@ -135,6 +135,7 @@
         android:background="@drawable/btn_back"
         android:minWidth="200dp"
         android:text="Сделать Фото"
+        android:fontFamily="@font/roboto_regular"
         android:textAllCaps="false"
         android:textSize="16sp"
         android:textColor="@color/white"

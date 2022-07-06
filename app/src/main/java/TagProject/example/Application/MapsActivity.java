@@ -273,6 +273,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onClick(View v) {
                 getAllMarkers();
                 setAllMarkers();
+                Toast.makeText(getApplicationContext(), "Карта обновлена", Toast.LENGTH_SHORT).show();
             }
         });
         camera.setOnClickListener(new View.OnClickListener() {
