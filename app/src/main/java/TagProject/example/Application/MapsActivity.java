@@ -14,6 +14,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -73,6 +74,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private PhotoBase64 result = new PhotoBase64("-"); //Результат конвертации в base64
     private ImageAdapter adapter = new ImageAdapter(); //Класс для конвертации изображений
     private LatLng myLocation; //Текущая геолокация
+    private LatLng lastLocation = new LatLng(0, 0); //Текущая геолокация
 
     //Элементы разметки (View)
     private ImageView camera;
@@ -120,7 +122,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         String style = "[\n" +
                 "{\n" +
                 "\"featureType\" : \"all\",\n" +
-                "\"elementType\": \"labels\",\n" +
+                "\"elementType\": \"labels.icon\",\n" +
                 "\"stylers\": [\n" +
                 "{\n" +
                 "\"visibility\": \"off\"\n" +
@@ -196,6 +198,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 @Override
                 public void onMyLocationChange(Location arg0) {
                     myLocation = new LatLng(arg0.getLatitude(), arg0.getLongitude());
+                    lastLocation = myLocation;
                     if (myLocation == null)
                         myLocation = new LatLng(mMap.getMyLocation().getLatitude(), mMap.getMyLocation().getLongitude());
                 }
@@ -278,8 +281,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         setAllMarkers();
                         Toast.makeText(getApplicationContext(), "Карта обновлена", Toast.LENGTH_SHORT).show();
                     }
-                },500);
-                }
+                }, 500);
+            }
         });
         camera.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -318,7 +321,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_TAKE_PHOTO_AMBROSE && resultCode == RESULT_OK) {
             getImageFromResult(data);
-            showDialog(mMap.getMyLocation().getLatitude() + ", " + mMap.getMyLocation().getLongitude(), 1, result.getPhoto());
+            try {
+                showDialog(mMap.getMyLocation().getLatitude() + ", " + mMap.getMyLocation().getLongitude(), 1, result.getPhoto());
+            } catch (NullPointerException e) {
+                if (isGeoDisabled()) Toast.makeText(getApplicationContext(),
+                        "Проверьте, включена ли геолокация и повторите попытку", Toast.LENGTH_SHORT).show();
+                else {
+                    Toast.makeText(getApplicationContext(),
+                        "?????" + lastLocation.latitude + ", " + lastLocation.longitude, Toast.LENGTH_SHORT).show();
+                    Log.d("gps_location", lastLocation.latitude + ", " + lastLocation.longitude);
+                    showDialog(lastLocation.latitude + ", " + lastLocation.longitude, 1, result.getPhoto());
+                }
+            }
         }
     }
 
@@ -379,9 +393,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * Метод вызывает диалог с пользователем об
      * отправке изображения и геолокации на сервер
      *
-     * @param gps - долгота и широта, на которой расположен пользователь (String через запятую)
+     * @param gps          - долгота и широта, на которой расположен пользователь (String через запятую)
      * @param request_type - тип отправляемой метки (амброзия) (Integer)
-     * @param image - base64 изображение (String)
+     * @param image        - base64 изображение (String)
      */
     public void showDialog(String gps, int request_type, String image) {
         View promptsView = View.inflate(this, R.layout.alert_view, null);
@@ -410,7 +424,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * Метод вызывает диалоговое окно
      * с описанием идеи приложения
      */
-    public void showQuestionDialog(){
+    public void showQuestionDialog() {
         View promptsView = View.inflate(this, R.layout.question_dialog, null);
         androidx.appcompat.app.AlertDialog alertDialog = new MaterialAlertDialogBuilder(MapsActivity.this, R.style.RoundShapeTheme)
                 .setView(promptsView)

@@ -2,5 +2,4 @@
     <string name="app_name">Амброзия</string>
     <string name="title_activity_maps">Амброзия</string>
     <string name="questionText">Вы можете помогать администрации бороться с сорной растительностью, фотографируя кусты амброзии и создавая метки её произростания на карте города</string>
-    <string name="style_json">[{"featureType": "all","elementType": "labels","stylers": [{"visibility": "off"}]]</string>
 </resources>
