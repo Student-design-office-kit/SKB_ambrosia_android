@@ -1,6 +1,5 @@
 package TagProject.example.Application;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
@@ -10,11 +9,9 @@ import androidx.fragment.app.FragmentActivity;
 import android.Manifest;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -72,7 +69,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private ArrayList<Markers> allMarkers = getAllMarkers(); //Массив со всеми меткми на сервере
     private static final int REQUEST_TAKE_PHOTO_AMBROSE = 1; //Код для ответа от камеры
     private PhotoBase64 result = new PhotoBase64("-"); //Результат конвертации в base64
-    private ImageAdapter adapter = new ImageAdapter(); //Класс для конвертации изображений
+    private ImageAdapter adapter; //Класс для конвертации изображений
     private LatLng myLocation; //Текущая геолокация
     private LatLng lastLocation = new LatLng(0, 0); //Текущая геолокация
 
@@ -83,6 +80,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private ImageView map;
     private ImageView question;
     private FrameLayout myMap;
+    private FrameLayout googleView;
     private AppCompatButton takePhoto;
 
 
@@ -93,6 +91,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+        adapter = new ImageAdapter(getApplicationContext(), this);
         if (isGeoDisabled()) {
             startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
         }
@@ -212,7 +211,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      */
     private void setTakePhoto() {
         permissionCheck();
-        getPhoto(REQUEST_TAKE_PHOTO_AMBROSE);
+        adapter.sendTakePictureIntent();
+        //getPhoto(REQUEST_TAKE_PHOTO_AMBROSE);
+    }
+
+    private void getPhoto(int requestCode) {
+        Intent takePhotoIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        try {
+            startActivityForResult(takePhotoIntent, requestCode);
+        } catch (ActivityNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -231,20 +240,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    /**
-     * Метод вызывает стандартное приложение камеры
-     * устройства с ожиданием результата
-     *
-     * @param requestCode - код ответа для получения изображения (Integer)
-     */
-    private void getPhoto(int requestCode) {
-        Intent takePhotoIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        try {
-            startActivityForResult(takePhotoIntent, requestCode);
-        } catch (ActivityNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
 
     /**
      * Метод находит все элементы разметки и
@@ -256,6 +251,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         restore = findViewById(R.id.restore);
         takePhoto = findViewById(R.id.takePhoto);
         myMap = findViewById(R.id.myMap);
+        googleView = findViewById(R.id.googleMap);
         cameraScreen = findViewById(R.id.cameraScreen);
         question = findViewById(R.id.question);
 
@@ -291,6 +287,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 camera.setImageResource(R.drawable.camera_green);
                 map.setImageResource(R.drawable.tag_grey);
                 myMap.setVisibility(View.INVISIBLE);
+                googleView.setVisibility(View.INVISIBLE);
                 takePhoto.setVisibility(View.VISIBLE);
             }
         });
@@ -301,6 +298,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 camera.setImageResource(R.drawable.camera_grey);
                 map.setImageResource(R.drawable.tag_green);
                 myMap.setVisibility(View.VISIBLE);
+                googleView.setVisibility(View.VISIBLE);
                 takePhoto.setVisibility(View.INVISIBLE);
             }
         });
@@ -320,15 +318,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_TAKE_PHOTO_AMBROSE && resultCode == RESULT_OK) {
-            getImageFromResult(data);
+            getImageFromResult();
             try {
                 showDialog(mMap.getMyLocation().getLatitude() + ", " + mMap.getMyLocation().getLongitude(), 1, result.getPhoto());
             } catch (NullPointerException e) {
                 if (isGeoDisabled()) Toast.makeText(getApplicationContext(),
                         "Проверьте, включена ли геолокация и повторите попытку", Toast.LENGTH_SHORT).show();
                 else {
-                    Toast.makeText(getApplicationContext(),
-                        "?????" + lastLocation.latitude + ", " + lastLocation.longitude, Toast.LENGTH_SHORT).show();
                     Log.d("gps_location", lastLocation.latitude + ", " + lastLocation.longitude);
                     showDialog(lastLocation.latitude + ", " + lastLocation.longitude, 1, result.getPhoto());
                 }
@@ -340,11 +336,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * Метод конвертирует узображение в base64
      * формат для отправки на сервер
      */
-    private void getImageFromResult(Intent data) {
-        Bundle extras = data.getExtras();
-        Bitmap thumbnailBitmap = (Bitmap) extras.get("data");
-        ImageAdapter adapter = new ImageAdapter();
-        result.setPhoto(adapter.encodeImage(thumbnailBitmap));
+    private void getImageFromResult() {
+        result.setPhoto(adapter.encodeImage(adapter.getBitmap()));
         Log.d("getImage", result.getPhoto());
     }
 
