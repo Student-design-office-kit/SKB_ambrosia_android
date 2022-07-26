@@ -1,5 +1,6 @@
 package TagProject.example.Application;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
@@ -11,18 +12,18 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.StrictMode;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import TagProject.example.Application.Models.Markers;
@@ -30,6 +31,7 @@ import TagProject.example.Application.Models.PhotoBase64;
 import TagProject.example.Application.Models.ResponseModel;
 import TagProject.example.Application.Models.SendModel;
 
+import com.bumptech.glide.Glide;
 import com.example.myapplication.R;
 
 import TagProject.example.Application.Services.NetworkServices;
@@ -42,15 +44,11 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputEditText;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.jsoup.Jsoup;
-
 import java.io.IOError;
-import java.io.IOException;
 import java.util.ArrayList;
 
 import retrofit2.Call;
@@ -82,6 +80,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private FrameLayout myMap;
     private FrameLayout googleView;
     private AppCompatButton takePhoto;
+    private BottomSheetDialog sheetDialog;
 
 
     /**
@@ -136,36 +135,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (allMarkers.size() != 0)
             mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(allMarkers.get(allMarkers.size() - 1).getLat(), allMarkers.get(allMarkers.size() - 1).getLon())));
         mMap.setMinZoomPreference(12);
+        mMap.getUiSettings().setMapToolbarEnabled(false);
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(@NonNull Marker marker) {
+                getMarkerById(Integer.parseInt(marker.getTitle()));
+                return false;
+            }
+        });
         mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
             @Override
             public View getInfoWindow(Marker marker) {
-                String titleInfo[] = marker.getTitle().split("some_id");
-                String url = "http://tagproject-api.sfedu.ru/api/v1/map/markers/" + titleInfo[0] + "/get_image_base64";
                 LinearLayout info = new LinearLayout(getApplicationContext());
-                info.setOrientation(LinearLayout.VERTICAL);
-                ImageView snippet = new ImageView(getApplicationContext());
-
-                StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-                StrictMode.setThreadPolicy(policy);
-
-                String in = null;
-                try {
-                    in = Jsoup.connect(url).ignoreContentType(true).execute().body();
-                    JSONObject reader = new JSONObject(in);
-                    in = reader.getString("image_base64");
-                    Log.d("myIn", in);
-                    try {
-                        snippet.setImageBitmap(Bitmap.createScaledBitmap(adapter.decodeImage(in), 200, 280, false));
-                    } catch (Exception e) {
-                        snippet.setImageResource(R.drawable.map_tag);
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-                info.addView(snippet);
                 return info;
             }
 
@@ -246,6 +227,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * устанавливает обработчики нажатий на них
      */
     private void findView() {
+        sheetDialog = new BottomSheetDialog(MapsActivity.this);
         camera = findViewById(R.id.item_camera);
         map = findViewById(R.id.item_map);
         restore = findViewById(R.id.restore);
@@ -375,8 +357,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.clear();
         for (int i = 0; i < allMarkers.size(); i++) {
             markers.add(mMap.addMarker(new MarkerOptions().position(new LatLng(allMarkers.get(i).getLat(),
-                    allMarkers.get(i).getLon())).title(allMarkers.get(i).getId()
-                    + "some_id" + allMarkers.get(i).getDescription())
+                    allMarkers.get(i).getLon())).title(allMarkers.get(i).getId() + "")
                     .icon(adapter.getBitmapFromVectorDrawable(getApplicationContext(), R.drawable.map_tag))));
         }
 
@@ -456,5 +437,51 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Log.d("alert", "fail");
             }
         });
+    }
+
+    /**
+     * Метод вызывает диалоговое окно
+     * с описанием выбранной метки на карте
+     */
+    private void createSheetDialog(Markers marker) {
+        View view = getLayoutInflater().inflate(R.layout.bottom_sheet_dialog, null, false);
+
+        ImageView image = view.findViewById(R.id.image_dialog);
+        TextView address = view.findViewById(R.id.address_dialog);
+        TextView description = view.findViewById(R.id.description_dialog);
+
+        Glide.with(this).load(marker.getGetImage()).into(image);
+        address.setText(marker.getStreet().toString());
+        description.setText(marker.getDescription().toString());
+
+        sheetDialog.setContentView(view);
+    }
+
+    /**
+     * Метод получает с сервера маркер
+     * по его id и размещает всю
+     * информацию в выплывающий диалог
+     */
+    private void getMarkerById(int id){
+        NetworkServices.getInstance()
+                .getJSONApi()
+                .getMarkerById(id)
+                .enqueue(new Callback<Markers>() {
+                    @Override
+                    public void onResponse(Call<Markers> call, Response<Markers> response) {
+                        if (response.code() == 200) {
+                            Markers marker = response.body();
+                            Log.d("myLog", "accept \n" + marker.toString());
+                            createSheetDialog(marker);
+                            sheetDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+                            sheetDialog.show();
+                        } else Log.d("myLog", response.message());
+                    }
+
+                    @Override
+                    public void onFailure(Call<Markers> call, Throwable t) {
+                        Log.d("myLog", "Failure" + t.getMessage());
+                    }
+                });
     }
 }

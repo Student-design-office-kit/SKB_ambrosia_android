@@ -7,6 +7,8 @@ import com.google.gson.annotations.SerializedName;
 public class Markers {
     @SerializedName("id")
     private Integer id;
+    @SerializedName("street")
+    private String street;
     @SerializedName("name")
     private String name;
     @SerializedName("description")
@@ -38,6 +40,10 @@ public class Markers {
 
     public Integer getMarkerType() {
         return markerType;
+    }
+
+    public String getStreet() {
+        return street;
     }
 
     public String getGps() {
@@ -74,6 +80,7 @@ public class Markers {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
+                ", street='" + street + '\'' +
                 ", markerType=" + markerType +
                 ", gps='" + gps + '\'' +
                 ", image='" + image + '\'' +
