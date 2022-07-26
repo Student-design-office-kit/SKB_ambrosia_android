@@ -43,11 +43,19 @@
             android:textCursorDrawable="@null" />
     </com.google.android.material.textfield.TextInputLayout>
 
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="30dp"
+        android:layout_marginTop="10dp"
+        android:fontFamily="@font/roboto_regular"
+        android:text="Сохранить изображение ?" />
+
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_send"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="10dp"
         android:background="@drawable/btn_send_back"
         android:fontFamily="@font/roboto_regular"
         android:minHeight="60dp"

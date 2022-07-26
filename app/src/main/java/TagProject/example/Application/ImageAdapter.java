@@ -13,6 +13,7 @@ import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Base64;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.core.content.ContextCompat;
@@ -56,17 +57,6 @@ public class ImageAdapter {
         byte[] imageBytes = byteArrayOutputStream.toByteArray();
         encodeImage = Base64.encodeToString(imageBytes, Base64.DEFAULT);
         return encodeImage;
-    }
-
-
-    /**
-     * Метод декодирует изображение из base64 в Bitmap формат
-     *
-     * @param image - base64 строка с изображением (String)
-     */
-    public Bitmap decodeImage(String image) {
-        byte[] imageBytes = Base64.decode(image, Base64.DEFAULT);
-        return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
     }
 
     /**
@@ -115,7 +105,6 @@ public class ImageAdapter {
         Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, true);
         if (cameraIntent.resolveActivity(context.getPackageManager()) != null) {
-            activity.startActivityForResult(cameraIntent, REQUEST_PICTURE_CAPTURE);
             pictureFile = null;
             try {
                 pictureFile = getPictureFile();

@@ -196,15 +196,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //getPhoto(REQUEST_TAKE_PHOTO_AMBROSE);
     }
 
-    private void getPhoto(int requestCode) {
-        Intent takePhotoIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        try {
-            startActivityForResult(takePhotoIntent, requestCode);
-        } catch (ActivityNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
-
     /**
      * Метод проверяет проверяет наличие
      * доступа ккамере устройства
@@ -220,7 +211,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Toast.makeText(getApplicationContext(), "Убедитесь, что у вас включен GPS", Toast.LENGTH_LONG).show();
         }
     }
-
 
     /**
      * Метод находит все элементы разметки и
