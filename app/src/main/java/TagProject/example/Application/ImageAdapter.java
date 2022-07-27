@@ -83,6 +83,7 @@ public class ImageAdapter {
     static final int REQUEST_PICTURE_CAPTURE = 1;
     private String pictureFilePath;
     private File pictureFile;
+    private File image;
 
     /**
      * Метод создаёт файл изображения
@@ -92,7 +93,7 @@ public class ImageAdapter {
         String timeStamp = new SimpleDateFormat("d MMM yyyy HH:mm:ss").format(new Date());
         String pictureFile = timeStamp;
         File storageDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        File image = File.createTempFile(pictureFile, ".jpg", storageDir);
+        image = File.createTempFile(pictureFile, ".jpg", storageDir);
         pictureFilePath = image.getAbsolutePath();
         return image;
     }
@@ -131,6 +132,7 @@ public class ImageAdapter {
         Matrix matrix = new Matrix();
         matrix.postRotate(90);
         bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+        image.delete();
         return bitmap;
     }
 }

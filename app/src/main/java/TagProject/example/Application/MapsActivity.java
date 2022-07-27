@@ -12,6 +12,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -20,6 +21,7 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.CheckBox;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -49,7 +51,9 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.io.IOError;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -70,6 +74,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private ImageAdapter adapter; //Класс для конвертации изображений
     private LatLng myLocation; //Текущая геолокация
     private LatLng lastLocation = new LatLng(0, 0); //Текущая геолокация
+    private Bitmap bitmap = null; //Bitmap получаемый с камеры
 
     //Элементы разметки (View)
     private ImageView camera;
@@ -309,7 +314,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * формат для отправки на сервер
      */
     private void getImageFromResult() {
-        result.setPhoto(adapter.encodeImage(adapter.getBitmap()));
+        bitmap = adapter.getBitmap();
+        result.setPhoto(adapter.encodeImage(bitmap));
         Log.d("getImage", result.getPhoto());
     }
 
@@ -364,6 +370,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void showDialog(String gps, int request_type, String image) {
         View promptsView = View.inflate(this, R.layout.alert_view, null);
         final TextInputEditText userInput = promptsView.findViewById(R.id.input_text);
+        CheckBox toSave = promptsView.findViewById(R.id.checkboxToSave);
         androidx.appcompat.app.AlertDialog alertDialog = new MaterialAlertDialogBuilder(MapsActivity.this, R.style.RoundShapeTheme)
                 .setView(promptsView)
                 .create();
@@ -375,6 +382,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 String info = userInput.getText().toString();
                 if (info == null) info = "Описание отсутствует";
                 if (image.length() == 0) alertDialog.cancel();
+                if(toSave.isChecked()){
+                    String timeStamp = new SimpleDateFormat("d MMM yyyy HH:mm:ss").format(new Date());
+                    MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, timeStamp, "Изображение сделано приложением \"Амброзия\" ");
+                }
                 sendImage(new SendModel(name, info, gps, request_type, image));
                 alertDialog.cancel();
                 alertDialog.dismiss();
@@ -452,7 +463,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * по его id и размещает всю
      * информацию в выплывающий диалог
      */
-    private void getMarkerById(int id){
+    private void getMarkerById(int id) {
         NetworkServices.getInstance()
                 .getJSONApi()
                 .getMarkerById(id)

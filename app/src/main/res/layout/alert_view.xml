@@ -44,6 +44,7 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <CheckBox
+        android:id="@+id/checkboxToSave"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="30dp"
