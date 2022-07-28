@@ -14,6 +14,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -75,6 +76,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private LatLng myLocation; //Текущая геолокация
     private LatLng lastLocation = new LatLng(0, 0); //Текущая геолокация
     private Bitmap bitmap = null; //Bitmap получаемый с камеры
+    private LatLng latLng;
+    private LocationManager locationManager;
 
     //Элементы разметки (View)
     private ImageView camera;
@@ -222,6 +225,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * устанавливает обработчики нажатий на них
      */
     private void findView() {
+        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         sheetDialog = new BottomSheetDialog(MapsActivity.this);
         camera = findViewById(R.id.item_camera);
         map = findViewById(R.id.item_map);
@@ -297,7 +301,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (requestCode == REQUEST_TAKE_PHOTO_AMBROSE && resultCode == RESULT_OK) {
             getImageFromResult();
             try {
-                showDialog(mMap.getMyLocation().getLatitude() + ", " + mMap.getMyLocation().getLongitude(), 1, result.getPhoto());
+                showDialog(latLng.latitude + ", " + latLng.longitude, 1, result.getPhoto());
             } catch (NullPointerException e) {
                 if (isGeoDisabled()) Toast.makeText(getApplicationContext(),
                         "Проверьте, включена ли геолокация и повторите попытку", Toast.LENGTH_SHORT).show();
@@ -484,5 +488,46 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         Log.d("myLog", "Failure" + t.getMessage());
                     }
                 });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            Toast.makeText(getApplicationContext(), "Првоверьте геолокацию", Toast.LENGTH_SHORT).show(); return; }
+        locationManager.requestLocationUpdates(
+                LocationManager.NETWORK_PROVIDER, 0, 0,
+                locationListener);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        locationManager.removeUpdates(locationListener);
+    }
+
+    private LocationListener locationListener = new LocationListener() {
+        @Override
+        public void onLocationChanged(Location location) {
+            showLocation(location);
+        }
+
+        @Override
+        public void onProviderDisabled(String provider) { }
+
+        @Override
+        public void onProviderEnabled(String provider) {
+            if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(getApplicationContext(), "Првоверьте геолокацию", Toast.LENGTH_SHORT).show(); return; }
+            showLocation(locationManager.getLastKnownLocation(provider));
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) { }
+    };
+
+    private void showLocation(Location location) {
+        if (location == null) return;
+        latLng = new LatLng(location.getLatitude(), location.getLongitude());
     }
 }
