@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/item_camera"
+        android:enabled="true"
+        android:icon="@drawable/camera_grey"
+        android:title="@null"/>
+
+    <item
+        android:id="@+id/item_map"
+        android:enabled="true"
+        android:icon="@drawable/tag_grey"
+        android:title="@null"/>
+</menu>

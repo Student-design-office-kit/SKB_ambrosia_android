@@ -10,4 +10,7 @@
     <color name="bnvColor">#F1F3F4</color>
     <color name="flowerColor">#E60C0C</color>
     <color name="carColor">#0C3BE6</color>
+
+    <color name="iconBNVColorActive">#95E375</color>
+    <color name="iconBNVColorInActive">#989898</color>
 </resources>

@@ -102,7 +102,7 @@ public class ImageAdapter {
      * Метод отправляет запрос на
      * запуск камеры устройства
      */
-    protected void sendTakePictureIntent() {
+    public void sendTakePictureIntent() {
         Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, true);
         if (cameraIntent.resolveActivity(context.getPackageManager()) != null) {

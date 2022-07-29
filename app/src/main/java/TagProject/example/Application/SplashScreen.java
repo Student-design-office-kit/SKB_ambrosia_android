@@ -14,6 +14,9 @@ import androidx.core.app.ActivityCompat;
 
 import com.example.myapplication.R;
 
+import TagProject.example.Application.ui.CameraFragment;
+import TagProject.example.Application.ui.MapFragment;
+
 /** Класс отвечает за отображение приветсвенного экрана
     и получение разрешения на использование геолокации */
 public class SplashScreen extends AppCompatActivity {
@@ -34,7 +37,7 @@ public class SplashScreen extends AppCompatActivity {
             }
         }
 
-        startActivity(new Intent(getApplicationContext(), MapsActivity.class));
+        startActivity(new Intent(getApplicationContext(), MapFragment.class));
         finish();
     }
 
@@ -44,10 +47,8 @@ public class SplashScreen extends AppCompatActivity {
         switch (requestCode) {
             case 1:
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    startActivity(new Intent(getApplicationContext(), MapsActivity.class));
+                    startActivity(new Intent(getApplicationContext(), MapFragment.class));
                     finish();
-                } else {
-                    Toast.makeText(this, "your message", Toast.LENGTH_SHORT).show();
                 }
                 break;
             default:

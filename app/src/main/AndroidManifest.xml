@@ -48,7 +48,12 @@
 
         <activity
             android:screenOrientation="portrait"
-            android:name="TagProject.example.Application.MapsActivity"
+            android:name="TagProject.example.Application.ui.CameraFragment"
+            android:exported="false" />
+
+        <activity
+            android:screenOrientation="portrait"
+            android:name="TagProject.example.Application.ui.MapFragment"
             android:exported="false" />
     </application>
 
