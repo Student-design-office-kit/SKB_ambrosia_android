@@ -13,7 +13,6 @@ import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Base64;
-import android.util.Log;
 import android.widget.Toast;
 
 import androidx.core.content.ContextCompat;

@@ -1,10 +1,10 @@
 package TagProject.example.Application.Services;
-import TagProject.example.Application.Models.Markers;
-import TagProject.example.Application.Models.ResponseModel;
-import TagProject.example.Application.Models.SendModel;
 
 import java.util.ArrayList;
 
+import TagProject.example.Application.Models.Markers;
+import TagProject.example.Application.Models.ResponseModel;
+import TagProject.example.Application.Models.SendModel;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;

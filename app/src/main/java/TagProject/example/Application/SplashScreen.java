@@ -4,17 +4,12 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.view.animation.AnimationUtils;
-import android.widget.ImageView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import com.example.myapplication.R;
 
-import TagProject.example.Application.ui.CameraFragment;
 import TagProject.example.Application.ui.MapFragment;
 
 /** Класс отвечает за отображение приветсвенного экрана
