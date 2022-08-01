@@ -79,6 +79,9 @@ public class CameraFragment extends AppCompatActivity {
         findView();
     }
 
+    /**Найти все элементы разметик
+     * и установить обработчики нажатий
+     * */
     private void findView(){
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         findViewById(R.id.takePhoto).setOnClickListener(new View.OnClickListener() {
@@ -106,6 +109,8 @@ public class CameraFragment extends AppCompatActivity {
         }
     }
 
+    /**Конвертирует изображение из
+     * bitmap в base64 формат*/
     private void getImageFromResult() {
         bitmap = adapter.getBitmap();
         result.setPhoto(adapter.encodeImage(bitmap));
@@ -203,6 +208,7 @@ public class CameraFragment extends AppCompatActivity {
         locationManager.removeUpdates(locationListener);
     }
 
+    /**Слушатель измениения геолокации*/
     private LocationListener locationListener = new LocationListener() {
         @Override
         public void onLocationChanged(Location location) {
@@ -223,6 +229,9 @@ public class CameraFragment extends AppCompatActivity {
         public void onStatusChanged(String provider, int status, Bundle extras) { }
     };
 
+    /**Получение геолокации от
+     * слушателя изменения локации
+     * */
     private void showLocation(Location location) {
         if (location == null) return;
         latLng = new LatLng(location.getLatitude(), location.getLongitude());
@@ -233,6 +242,11 @@ public class CameraFragment extends AppCompatActivity {
 
     }
 
+    /** Сохранение в преференсе состояния
+     * checkBox-а в диалоге
+     *
+     * @param checked - сохраняемый параметр
+    * */
     private void savePref(boolean checked){
         SharedPreferences mSettings = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
 
@@ -241,6 +255,9 @@ public class CameraFragment extends AppCompatActivity {
         editor.apply();
     }
 
+    /**Получение из преференса состояния
+     * checkbox-а при последнем отправлении.
+     * */
     private boolean loadPref(){
         SharedPreferences sharedPreferences = getSharedPreferences(APP_PREFERENCES, MODE_PRIVATE);
         return sharedPreferences.getBoolean("checkBox", false);
