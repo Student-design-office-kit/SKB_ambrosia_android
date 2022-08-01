@@ -1,7 +1,9 @@
 package TagProject.example.Application.ui;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.location.Location;
@@ -47,6 +49,7 @@ public class CameraFragment extends AppCompatActivity {
     private Bitmap bitmap;
     private LocationManager locationManager;
     private LatLng latLng;
+    private String APP_PREFERENCES = "settings";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -124,6 +127,7 @@ public class CameraFragment extends AppCompatActivity {
                 .setView(promptsView)
                 .create();
 
+        toSave.setChecked(loadPref());
         promptsView.findViewById(R.id.btn_send).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -136,9 +140,10 @@ public class CameraFragment extends AppCompatActivity {
                     MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, timeStamp, "Изображение сделано приложением \"Амброзия\" ");
                 }
                 try {
+                    savePref(toSave.isChecked());
                     sendImage(new SendModel(name, info, latLng.latitude + ", " + latLng.longitude, request_type, image));
                 }catch (NullPointerException e){
-                    Toast.makeText(getApplicationContext(), e.getMessage().toString(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Что-то пошло не так. Повторите попытку позже", Toast.LENGTH_SHORT).show();
                 }
 
                 alertDialog.cancel();
@@ -226,5 +231,18 @@ public class CameraFragment extends AppCompatActivity {
     @Override
     public void onBackPressed() {
 
+    }
+
+    private void savePref(boolean checked){
+        SharedPreferences mSettings = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
+
+        SharedPreferences.Editor editor = mSettings.edit();
+        editor.putBoolean("checkBox", checked);
+        editor.apply();
+    }
+
+    private boolean loadPref(){
+        SharedPreferences sharedPreferences = getSharedPreferences(APP_PREFERENCES, MODE_PRIVATE);
+        return sharedPreferences.getBoolean("checkBox", false);
     }
 }
