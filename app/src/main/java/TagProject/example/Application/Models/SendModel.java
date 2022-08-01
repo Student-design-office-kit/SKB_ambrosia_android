@@ -39,8 +39,6 @@ public class SendModel {
                 "name:\"" + name + '\"' +
                 ", description:\"" + description + '\"' +
                 ", gps:\"" + gps + '\"' +
-                ", marker_type:" + marker_type +
-                ", image:\"" + image + '\"' +
                 '}';
     }
 }

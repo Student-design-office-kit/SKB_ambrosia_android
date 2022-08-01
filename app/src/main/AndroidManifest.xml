@@ -6,7 +6,10 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
-    <uses-feature android:name="android.hardware.camera" android:required="true" />
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="true" />
+
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
@@ -18,6 +21,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MyApplication"
         android:usesCleartextTraffic="true">
+        <activity
+            android:name="TagProject.example.Application.ui.InfoFragment"
+            android:exported="false" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -28,7 +34,6 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths" />
         </provider>
-
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
@@ -45,16 +50,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
-            android:screenOrientation="portrait"
             android:name="TagProject.example.Application.ui.CameraFragment"
-            android:exported="false" />
-
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
-            android:screenOrientation="portrait"
             android:name="TagProject.example.Application.ui.MapFragment"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

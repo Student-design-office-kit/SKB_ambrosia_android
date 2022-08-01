@@ -64,6 +64,10 @@ public class CameraFragment extends AppCompatActivity {
                         return true;
                     case R.id.item_camera:
                         return true;
+                    case R.id.item_info:
+                        startActivity(new Intent(getApplicationContext(),InfoFragment.class));
+                        overridePendingTransition(0,0);
+                        return true;
                 }
                 return false;
             }
@@ -92,7 +96,7 @@ public class CameraFragment extends AppCompatActivity {
         if (requestCode == REQUEST_TAKE_PHOTO_AMBROSE && resultCode == RESULT_OK) {
             getImageFromResult();
             try {
-                showDialog(latLng.latitude + ", " + latLng.longitude, 1, result.getPhoto());
+                showDialog(1, result.getPhoto());
             } catch (NullPointerException e) {
                 Toast.makeText(getApplicationContext(), "Проверьте, включена ли геолокация и повторите попытку", Toast.LENGTH_SHORT).show();
             }
@@ -109,11 +113,10 @@ public class CameraFragment extends AppCompatActivity {
      * Метод вызывает диалог с пользователем об
      * отправке изображения и геолокации на сервер
      *
-     * @param gps          - долгота и широта, на которой расположен пользователь (String через запятую)
      * @param request_type - тип отправляемой метки (амброзия) (Integer)
      * @param image        - base64 изображение (String)
      */
-    public void showDialog(String gps, int request_type, String image) {
+    public void showDialog(int request_type, String image) {
         View promptsView = View.inflate(this, R.layout.alert_view, null);
         final TextInputEditText userInput = promptsView.findViewById(R.id.input_text);
         CheckBox toSave = promptsView.findViewById(R.id.checkboxToSave);
@@ -132,7 +135,12 @@ public class CameraFragment extends AppCompatActivity {
                     String timeStamp = new SimpleDateFormat("d MMM yyyy HH:mm:ss").format(new Date());
                     MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, timeStamp, "Изображение сделано приложением \"Амброзия\" ");
                 }
-                sendImage(new SendModel(name, info, gps, request_type, image));
+                try {
+                    sendImage(new SendModel(name, info, latLng.latitude + ", " + latLng.longitude, request_type, image));
+                }catch (NullPointerException e){
+                    Toast.makeText(getApplicationContext(), e.getMessage().toString(), Toast.LENGTH_LONG).show();
+                }
+
                 alertDialog.cancel();
                 alertDialog.dismiss();
             }
@@ -215,4 +223,8 @@ public class CameraFragment extends AppCompatActivity {
         latLng = new LatLng(location.getLatitude(), location.getLongitude());
     }
 
+    @Override
+    public void onBackPressed() {
+
+    }
 }

@@ -44,13 +44,15 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <CheckBox
+        android:buttonTint="#818181"
         android:id="@+id/checkboxToSave"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="30dp"
         android:layout_marginTop="10dp"
+        android:textColor="#818181"
         android:fontFamily="@font/roboto_regular"
-        android:text="Сохранить изображение ?" />
+        android:text="Сохранить фото" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_send"

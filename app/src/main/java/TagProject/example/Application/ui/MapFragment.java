@@ -75,6 +75,10 @@ public class MapFragment extends AppCompatActivity implements OnMapReadyCallback
                         return true;
                     case R.id.item_map:
                         return true;
+                    case R.id.item_info:
+                        startActivity(new Intent(getApplicationContext(),InfoFragment.class));
+                        overridePendingTransition(0,0);
+                        return true;
                 }
                 return false;
             }
@@ -267,11 +271,8 @@ public class MapFragment extends AppCompatActivity implements OnMapReadyCallback
 
         ImageView image = view.findViewById(R.id.image_dialog);
         TextView address = view.findViewById(R.id.address_dialog);
-        TextView description = view.findViewById(R.id.description_dialog);
-
         Glide.with(this).load(marker.getGetImage()).into(image);
         address.setText(marker.getStreet().toString());
-        description.setText(marker.getDescription().toString());
 
         sheetDialog.setContentView(view);
     }
@@ -302,5 +303,10 @@ public class MapFragment extends AppCompatActivity implements OnMapReadyCallback
                         Log.d("myLog", "Failure" + t.getMessage());
                     }
                 });
+    }
+
+    @Override
+    public void onBackPressed() {
+
     }
 }

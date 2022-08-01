@@ -34,8 +34,15 @@
         <entry key="..\:/Projects/Android/AmbrouseFix/app/src/main/res/layout/question_dialog.xml" value="0.6" />
         <entry key="..\:/Projects/Android/AmbrouseFix/app/src/main/res/menu/menu_bottom_navigation.xml" value="0.17552083333333332" />
         <entry key="..\:/Projects/Android/AmbrouseLastVersion/app/src/main/res/drawable/bnv_status.xml" value="0.123" />
+        <entry key="..\:/Projects/Android/AmbrouseLastVersion/app/src/main/res/drawable/checkbox_back.xml" value="0.123" />
+        <entry key="..\:/Projects/Android/AmbrouseLastVersion/app/src/main/res/drawable/checked.xml" value="0.123" />
+        <entry key="..\:/Projects/Android/AmbrouseLastVersion/app/src/main/res/drawable/sheet_dialog_corners.xml" value="0.123" />
+        <entry key="..\:/Projects/Android/AmbrouseLastVersion/app/src/main/res/drawable/unchecked.xml" value="0.123" />
         <entry key="..\:/Projects/Android/AmbrouseLastVersion/app/src/main/res/layout/activity_maps.xml" value="0.17552083333333332" />
+        <entry key="..\:/Projects/Android/AmbrouseLastVersion/app/src/main/res/layout/alert_view.xml" value="0.22" />
+        <entry key="..\:/Projects/Android/AmbrouseLastVersion/app/src/main/res/layout/bottom_sheet_dialog.xml" value="0.17552083333333332" />
         <entry key="..\:/Projects/Android/AmbrouseLastVersion/app/src/main/res/layout/fragment_camera.xml" value="0.17552083333333332" />
+        <entry key="..\:/Projects/Android/AmbrouseLastVersion/app/src/main/res/layout/fragment_info.xml" value="0.25" />
         <entry key="..\:/Projects/Android/AmbrouseLastVersion/app/src/main/res/layout/fragment_map.xml" value="0.17552083333333332" />
         <entry key="..\:/Projects/Android/AmbrouseLastVersion/app/src/main/res/menu/bottom_navigation_menu.xml" value="0.17552083333333332" />
         <entry key="app/src/main/res/layout/activity_maps.xml" value="0.23867753623188406" />

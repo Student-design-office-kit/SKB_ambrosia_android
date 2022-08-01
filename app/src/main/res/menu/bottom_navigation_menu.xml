@@ -11,4 +11,10 @@
         android:enabled="true"
         android:icon="@drawable/tag_grey"
         android:title="@null"/>
+
+    <item
+        android:id="@+id/item_info"
+        android:enabled="true"
+        android:icon="@drawable/info_icon_grey"
+        android:title="@null"/>
 </menu>

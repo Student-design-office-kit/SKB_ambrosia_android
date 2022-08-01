@@ -13,4 +13,7 @@
 
     <color name="iconBNVColorActive">#95E375</color>
     <color name="iconBNVColorInActive">#989898</color>
+
+    <color name="checkBoxChecked">#95E375</color>
+    <color name="checkBoxUnchecked">#FFFFFF</color>
 </resources>
