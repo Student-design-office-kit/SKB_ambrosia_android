@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -22,8 +23,13 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.drawable.RoundedBitmapDrawable;
+import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.example.myapplication.R;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -271,7 +277,10 @@ public class MapFragment extends AppCompatActivity implements OnMapReadyCallback
 
         ImageView image = view.findViewById(R.id.image_dialog);
         TextView address = view.findViewById(R.id.address_dialog);
-        Glide.with(this).load(marker.getGetImage()).into(image);
+        Glide.with(this)
+                .load(marker.getGetImage())
+                .apply(RequestOptions.bitmapTransform(new RoundedCorners(24)))
+                .into(image);
         address.setText(marker.getStreet().toString());
 
         sheetDialog.setContentView(view);

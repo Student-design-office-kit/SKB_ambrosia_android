@@ -35,7 +35,11 @@
         <entry key="..\:/Projects/Android/AmbrouseFix/app/src/main/res/menu/menu_bottom_navigation.xml" value="0.17552083333333332" />
         <entry key="..\:/Projects/Android/AmbrouseLastVersion/app/src/main/res/drawable/bnv_status.xml" value="0.123" />
         <entry key="..\:/Projects/Android/AmbrouseLastVersion/app/src/main/res/drawable/checkbox_back.xml" value="0.123" />
+        <entry key="..\:/Projects/Android/AmbrouseLastVersion/app/src/main/res/drawable/checkbox_status.xml" value="0.123" />
         <entry key="..\:/Projects/Android/AmbrouseLastVersion/app/src/main/res/drawable/checked.xml" value="0.123" />
+        <entry key="..\:/Projects/Android/AmbrouseLastVersion/app/src/main/res/drawable/ic_round_checked.xml" value="0.123" />
+        <entry key="..\:/Projects/Android/AmbrouseLastVersion/app/src/main/res/drawable/ic_round_unchecked.xml" value="0.123" />
+        <entry key="..\:/Projects/Android/AmbrouseLastVersion/app/src/main/res/drawable/imageview_radius.xml" value="0.123" />
         <entry key="..\:/Projects/Android/AmbrouseLastVersion/app/src/main/res/drawable/sheet_dialog_corners.xml" value="0.123" />
         <entry key="..\:/Projects/Android/AmbrouseLastVersion/app/src/main/res/drawable/unchecked.xml" value="0.123" />
         <entry key="..\:/Projects/Android/AmbrouseLastVersion/app/src/main/res/layout/activity_maps.xml" value="0.17552083333333332" />

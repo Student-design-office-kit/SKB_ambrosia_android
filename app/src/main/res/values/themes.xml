@@ -1,6 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.MyApplication" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <style name="Theme.MyApplication" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/purple_500</item>
         <item name="colorPrimaryVariant">@color/purple_700</item>
@@ -34,8 +34,4 @@
         <item name="android:background">@drawable/sheet_dialog_corners</item>
     </style>
 
-    <style name="checkBoxStyle" parent="Base.Theme.AppCompat">
-        <item name="colorAccent">@color/checkBoxChecked</item>
-        <item name="android:textColorSecondary">@color/checkBoxUnchecked</item>
-    </style>
 </resources>

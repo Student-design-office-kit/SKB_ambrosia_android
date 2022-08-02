@@ -60,16 +60,16 @@ public class CameraFragment extends AppCompatActivity {
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch(item.getItemId()) {
+                switch (item.getItemId()) {
                     case R.id.item_map:
-                        startActivity(new Intent(getApplicationContext(),MapFragment.class));
-                        overridePendingTransition(0,0);
+                        startActivity(new Intent(getApplicationContext(), MapFragment.class));
+                        overridePendingTransition(0, 0);
                         return true;
                     case R.id.item_camera:
                         return true;
                     case R.id.item_info:
-                        startActivity(new Intent(getApplicationContext(),InfoFragment.class));
-                        overridePendingTransition(0,0);
+                        startActivity(new Intent(getApplicationContext(), InfoFragment.class));
+                        overridePendingTransition(0, 0);
                         return true;
                 }
                 return false;
@@ -79,10 +79,11 @@ public class CameraFragment extends AppCompatActivity {
         findView();
     }
 
-    /**Найти все элементы разметик
+    /**
+     * Найти все элементы разметик
      * и установить обработчики нажатий
-     * */
-    private void findView(){
+     */
+    private void findView() {
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         findViewById(R.id.takePhoto).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -109,8 +110,10 @@ public class CameraFragment extends AppCompatActivity {
         }
     }
 
-    /**Конвертирует изображение из
-     * bitmap в base64 формат*/
+    /**
+     * Конвертирует изображение из
+     * bitmap в base64 формат
+     */
     private void getImageFromResult() {
         bitmap = adapter.getBitmap();
         result.setPhoto(adapter.encodeImage(bitmap));
@@ -133,6 +136,25 @@ public class CameraFragment extends AppCompatActivity {
                 .create();
 
         toSave.setChecked(loadPref());
+        toSave.setTextColor(toSave.isChecked() ?
+                getResources().getColor(R.color.checked_color) :
+                getResources().getColor(R.color.unchecked_color));/*
+        toSave.setButtonDrawable(toSave.isChecked() ?
+                getDrawable(R.drawable.ic_round_checked) :
+                getDrawable(R.drawable.ic_round_unchecked));*/
+
+        toSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                toSave.setTextColor(toSave.isChecked() ?
+                        getResources().getColor(R.color.checked_color) :
+                        getResources().getColor(R.color.unchecked_color));/*
+                toSave.setButtonDrawable(toSave.isChecked() ?
+                        getDrawable(R.drawable.ic_round_checked) :
+                        getDrawable(R.drawable.ic_round_unchecked));*/
+            }
+        });
+
         promptsView.findViewById(R.id.btn_send).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -140,14 +162,14 @@ public class CameraFragment extends AppCompatActivity {
                 String info = userInput.getText().toString();
                 if (info == null) info = "Описание отсутствует";
                 if (image.length() == 0) alertDialog.cancel();
-                if(toSave.isChecked()){
+                if (toSave.isChecked()) {
                     String timeStamp = new SimpleDateFormat("d MMM yyyy HH:mm:ss").format(new Date());
                     MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, timeStamp, "Изображение сделано приложением \"Амброзия\" ");
                 }
                 try {
                     savePref(toSave.isChecked());
                     sendImage(new SendModel(name, info, latLng.latitude + ", " + latLng.longitude, request_type, image));
-                }catch (NullPointerException e){
+                } catch (NullPointerException e) {
                     Toast.makeText(getApplicationContext(), "Что-то пошло не так. Повторите попытку позже", Toast.LENGTH_SHORT).show();
                 }
 
@@ -196,7 +218,9 @@ public class CameraFragment extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            Toast.makeText(getApplicationContext(), "Првоверьте геолокацию", Toast.LENGTH_SHORT).show(); return; }
+            Toast.makeText(getApplicationContext(), "Првоверьте геолокацию", Toast.LENGTH_SHORT).show();
+            return;
+        }
         locationManager.requestLocationUpdates(
                 LocationManager.NETWORK_PROVIDER, 0, 0,
                 locationListener);
@@ -208,7 +232,9 @@ public class CameraFragment extends AppCompatActivity {
         locationManager.removeUpdates(locationListener);
     }
 
-    /**Слушатель измениения геолокации*/
+    /**
+     * Слушатель измениения геолокации
+     */
     private LocationListener locationListener = new LocationListener() {
         @Override
         public void onLocationChanged(Location location) {
@@ -216,22 +242,27 @@ public class CameraFragment extends AppCompatActivity {
         }
 
         @Override
-        public void onProviderDisabled(String provider) { }
+        public void onProviderDisabled(String provider) {
+        }
 
         @Override
         public void onProviderEnabled(String provider) {
             if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(getApplicationContext(), "Првоверьте геолокацию", Toast.LENGTH_SHORT).show(); return; }
+                Toast.makeText(getApplicationContext(), "Првоверьте геолокацию", Toast.LENGTH_SHORT).show();
+                return;
+            }
             showLocation(locationManager.getLastKnownLocation(provider));
         }
 
         @Override
-        public void onStatusChanged(String provider, int status, Bundle extras) { }
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+        }
     };
 
-    /**Получение геолокации от
+    /**
+     * Получение геолокации от
      * слушателя изменения локации
-     * */
+     */
     private void showLocation(Location location) {
         if (location == null) return;
         latLng = new LatLng(location.getLatitude(), location.getLongitude());
@@ -242,12 +273,13 @@ public class CameraFragment extends AppCompatActivity {
 
     }
 
-    /** Сохранение в преференсе состояния
+    /**
+     * Сохранение в преференсе состояния
      * checkBox-а в диалоге
      *
      * @param checked - сохраняемый параметр
-    * */
-    private void savePref(boolean checked){
+     */
+    private void savePref(boolean checked) {
         SharedPreferences mSettings = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
 
         SharedPreferences.Editor editor = mSettings.edit();
@@ -255,10 +287,11 @@ public class CameraFragment extends AppCompatActivity {
         editor.apply();
     }
 
-    /**Получение из преференса состояния
+    /**
+     * Получение из преференса состояния
      * checkbox-а при последнем отправлении.
-     * */
-    private boolean loadPref(){
+     */
+    private boolean loadPref() {
         SharedPreferences sharedPreferences = getSharedPreferences(APP_PREFERENCES, MODE_PRIVATE);
         return sharedPreferences.getBoolean("checkBox", false);
     }
