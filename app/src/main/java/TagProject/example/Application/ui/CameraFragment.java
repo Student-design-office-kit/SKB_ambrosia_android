@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
@@ -170,6 +171,9 @@ public class CameraFragment extends AppCompatActivity {
                     savePref(toSave.isChecked());
                     sendImage(new SendModel(name, info, latLng.latitude + ", " + latLng.longitude, request_type, image));
                 } catch (NullPointerException e) {
+                    if (!isNetworkConnected())
+                        Toast.makeText(getApplicationContext(), "Проверьте ваше интернет соединение", Toast.LENGTH_SHORT).show();
+                    else
                     Toast.makeText(getApplicationContext(), "Что-то пошло не так. Повторите попытку позже", Toast.LENGTH_SHORT).show();
                 }
 
@@ -181,6 +185,13 @@ public class CameraFragment extends AppCompatActivity {
         alertDialog.show();
     }
 
+    /**
+     * Метод проверяет наличие интернет соединения
+     */
+    private boolean isNetworkConnected() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        return cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isConnected();
+    }
 
     /**
      * Метод выполняет отправку данных на сервер
@@ -189,6 +200,9 @@ public class CameraFragment extends AppCompatActivity {
      */
     public void sendImage(SendModel sendModel) {
         Log.d("sendModel", sendModel.toString());
+
+        if (!isNetworkConnected())
+            Toast.makeText(getApplicationContext(), "Проверьте интернет соединение", Toast.LENGTH_SHORT).show();
         NetworkServices.getInstance().getJSONApi().uploadMarker(sendModel).enqueue(new Callback<ResponseModel>() {
             @Override
             public void onResponse(Call<ResponseModel> call, Response<ResponseModel> response) {
@@ -212,6 +226,7 @@ public class CameraFragment extends AppCompatActivity {
                 Log.d("alert", "fail");
             }
         });
+
     }
 
     @Override

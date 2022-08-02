@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.location.Location;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -74,16 +75,16 @@ public class MapFragment extends AppCompatActivity implements OnMapReadyCallback
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch(item.getItemId()) {
+                switch (item.getItemId()) {
                     case R.id.item_camera:
-                        startActivity(new Intent(getApplicationContext(),CameraFragment.class));
-                        overridePendingTransition(0,0);
+                        startActivity(new Intent(getApplicationContext(), CameraFragment.class));
+                        overridePendingTransition(0, 0);
                         return true;
                     case R.id.item_map:
                         return true;
                     case R.id.item_info:
-                        startActivity(new Intent(getApplicationContext(),InfoFragment.class));
-                        overridePendingTransition(0,0);
+                        startActivity(new Intent(getApplicationContext(), InfoFragment.class));
+                        overridePendingTransition(0, 0);
                         return true;
                 }
                 return false;
@@ -201,7 +202,8 @@ public class MapFragment extends AppCompatActivity implements OnMapReadyCallback
                     @Override
                     public void run() {
                         setAllMarkers();
-                        Toast.makeText(getApplicationContext(), "Карта обновлена", Toast.LENGTH_SHORT).show();
+                        if (!isNetworkConnected()) Toast.makeText(getApplicationContext(), "Проверьте интернет соединение", Toast.LENGTH_SHORT).show();
+                        else Toast.makeText(getApplicationContext(), "Карта обновлена", Toast.LENGTH_SHORT).show();
                     }
                 }, 500);
             }
@@ -213,6 +215,14 @@ public class MapFragment extends AppCompatActivity implements OnMapReadyCallback
 
         assert mapFragment != null;
         mapFragment.getMapAsync(this);
+    }
+
+    /**
+     * Метод проверяет наличие интернет соединения
+     */
+    private boolean isNetworkConnected() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        return cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isConnected();
     }
 
     /**
@@ -292,6 +302,8 @@ public class MapFragment extends AppCompatActivity implements OnMapReadyCallback
      * информацию в выплывающий диалог
      */
     private void getMarkerById(int id) {
+        if (!isNetworkConnected())
+            Toast.makeText(getApplicationContext(), "Проверьте интернет соединение", Toast.LENGTH_SHORT).show();
         NetworkServices.getInstance()
                 .getJSONApi()
                 .getMarkerById(id)
