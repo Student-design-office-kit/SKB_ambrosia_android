@@ -7,8 +7,9 @@ import android.view.MenuItem;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.myapplication.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import TagProject.example.Application.R;
 
 public class InfoFragment extends AppCompatActivity {
 

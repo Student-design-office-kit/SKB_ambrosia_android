@@ -10,6 +10,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
@@ -24,7 +25,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
-import com.example.myapplication.R;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -37,6 +37,7 @@ import TagProject.example.Application.ImageAdapter;
 import TagProject.example.Application.Models.PhotoBase64;
 import TagProject.example.Application.Models.ResponseModel;
 import TagProject.example.Application.Models.SendModel;
+import TagProject.example.Application.R;
 import TagProject.example.Application.Services.NetworkServices;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -89,9 +90,29 @@ public class CameraFragment extends AppCompatActivity {
         findViewById(R.id.takePhoto).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                adapter.sendTakePictureIntent();
+                if(isStoragePermissionGranted()) adapter.sendTakePictureIntent();
+                else Toast.makeText(getApplicationContext(), "Предоставьте доступ к файлам", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    public  boolean isStoragePermissionGranted() {
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    == PackageManager.PERMISSION_GRANTED) {
+                Log.v("TAG","Permission is granted");
+                return true;
+            } else {
+
+                Log.v("TAG","Permission is revoked");
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+                return false;
+            }
+        }
+        else { //permission is automatically granted on sdk<23 upon installation
+            Log.v("TAG","Permission is granted");
+            return true;
+        }
     }
 
     /**

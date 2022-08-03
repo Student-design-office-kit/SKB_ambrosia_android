@@ -2,5 +2,5 @@
 <paths>
     <external-path
         name="external_files"
-        path="Android/data/com.example.myapplication/files/Pictures" />
+        path="Android/data/com.TagProject/files/Pictures" />
 </paths>
