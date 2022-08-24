@@ -13,8 +13,8 @@
 
     <ImageView
         android:id="@+id/restore"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:layout_gravity="bottom|right"
         android:background="@drawable/reload"
         android:layout_marginRight="10dp"
@@ -24,8 +24,8 @@
 
     <ImageView
         android:id="@+id/question"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:layout_gravity="top|right"
         android:layout_marginTop="70dp"
         android:layout_marginRight="10dp"
@@ -35,8 +35,8 @@
 
     <TextView
         android:id="@+id/question_text"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:layout_gravity="top|right"
         android:layout_marginTop="70dp"
         android:layout_marginRight="10dp"
@@ -53,10 +53,11 @@
         android:layout_height="60dp"
         android:layout_gravity="bottom"
         app:itemIconTint="@drawable/bnv_status"
-        app:labelVisibilityMode="selected"
+        app:labelVisibilityMode="unlabeled"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
+        app:itemIconSize="26dp"
         app:layout_constraintStart_toStartOf="parent"
         app:menu="@menu/bottom_navigation_menu" />
 </androidx.constraintlayout.widget.ConstraintLayout>
