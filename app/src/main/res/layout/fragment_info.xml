@@ -184,7 +184,7 @@
         android:layout_gravity="bottom"
         app:itemIconTint="@drawable/bnv_status"
         app:labelVisibilityMode="unlabeled"
-        app:itemIconSize="26dp"
+        app:itemIconSize="30dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
