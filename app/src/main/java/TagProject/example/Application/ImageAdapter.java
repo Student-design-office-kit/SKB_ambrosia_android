@@ -127,9 +127,10 @@ public class ImageAdapter {
     public Bitmap getBitmap() {
         BitmapFactory.Options bmOptions = new BitmapFactory.Options();
         Bitmap bitmap = BitmapFactory.decodeFile(pictureFile.getAbsolutePath(),bmOptions);
-        bitmap = Bitmap.createScaledBitmap(bitmap, 1920, 1080, true);
+        if(bitmap.getWidth() > bitmap.getHeight()) bitmap = Bitmap.createScaledBitmap(bitmap, 1920, 1080, true);
+        else bitmap = Bitmap.createScaledBitmap(bitmap, 1080, 1920, true);
         Matrix matrix = new Matrix();
-        matrix.postRotate(90);
+        matrix.postRotate(0);
         bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
         image.delete();
         return bitmap;
