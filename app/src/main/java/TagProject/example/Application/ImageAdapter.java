@@ -18,6 +18,7 @@ import android.widget.Toast;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.exifinterface.media.ExifInterface;
 
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -27,6 +28,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * Класс для обработки изображений
@@ -126,13 +128,37 @@ public class ImageAdapter {
      */
     public Bitmap getBitmap() {
         BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-        Bitmap bitmap = BitmapFactory.decodeFile(pictureFile.getAbsolutePath(),bmOptions);
-        if(bitmap.getWidth() > bitmap.getHeight()) bitmap = Bitmap.createScaledBitmap(bitmap, 1920, 1080, true);
+        Bitmap bitmap = BitmapFactory.decodeFile(pictureFile.getAbsolutePath(), bmOptions);
+        if (bitmap.getWidth() > bitmap.getHeight())
+            bitmap = Bitmap.createScaledBitmap(bitmap, 1920, 1080, true);
         else bitmap = Bitmap.createScaledBitmap(bitmap, 1080, 1920, true);
-        Matrix matrix = new Matrix();
-        matrix.postRotate(0);
-        bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+
+        ExifInterface exif = null;
+        try {
+            exif = new ExifInterface(pictureFilePath);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        if (Objects.requireNonNull(exif.getAttribute(ExifInterface.TAG_ORIENTATION)).equalsIgnoreCase("6")) {
+            bitmap = rotate(bitmap, 90);
+        } else if (Objects.requireNonNull(exif.getAttribute(ExifInterface.TAG_ORIENTATION)).equalsIgnoreCase("8")) {
+            bitmap = rotate(bitmap, 270);
+        } else if (Objects.requireNonNull(exif.getAttribute(ExifInterface.TAG_ORIENTATION)).equalsIgnoreCase("3")) {
+            bitmap = rotate(bitmap, 180);
+        }
+
         image.delete();
         return bitmap;
+    }
+
+    public Bitmap rotate(Bitmap bitmap, int degree) {
+        int w = bitmap.getWidth();
+        int h = bitmap.getHeight();
+
+        Matrix mtx = new Matrix();
+        mtx.postRotate(degree);
+
+        return Bitmap.createBitmap(bitmap, 0, 0, w, h, mtx, true);
     }
 }
