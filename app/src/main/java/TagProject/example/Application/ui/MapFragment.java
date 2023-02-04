@@ -237,8 +237,12 @@ public class MapFragment extends AppCompatActivity implements OnMapReadyCallback
                     @Override
                     public void onResponse(Call<ArrayList<Markers>> call, Response<ArrayList<Markers>> response) {
                         if (response.code() == 200) {
-                            allMarkers = response.body();
-                            Log.d("myLog", "accept \n" + response.body().get(0).toString());
+                            try {
+                                allMarkers = response.body();
+                            }catch (NullPointerException e){
+                                allMarkers = new ArrayList<>();
+                            }
+                            //Log.d("myLog", "accept \n" + response.body().get(0).toString());
                         } else Log.d("myLog", response.message());
                     }
 
