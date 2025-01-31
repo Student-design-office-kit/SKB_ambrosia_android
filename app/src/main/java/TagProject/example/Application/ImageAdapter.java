@@ -115,7 +115,7 @@ public class ImageAdapter {
                 return;
             }
             if (pictureFile != null) {
-                Uri photoURI = FileProvider.getUriForFile(context, "com.TagProject" + ".provider", pictureFile);
+                Uri photoURI = FileProvider.getUriForFile(context, "com.TagProject.application" + ".provider", pictureFile);
                 cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                 activity.startActivityForResult(cameraIntent, REQUEST_PICTURE_CAPTURE);
             }
